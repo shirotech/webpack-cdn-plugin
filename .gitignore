@@ -1,0 +1,5 @@
+.DS_Store
+/.git/
+/.idea/
+/coverage/
+/node_modules/

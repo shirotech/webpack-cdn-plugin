@@ -1,0 +1,56 @@
+{
+  "name": "webpack-cdn-plugin",
+  "version": "0.0.1",
+  "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "webpack",
+    "html",
+    "externals",
+    "script",
+    "include",
+    "assets",
+    "plugin",
+    "cdn",
+    "production",
+    "development"
+  ],
+  "author": {
+    "name": "Van Nguyen",
+    "email": "van@shirotech.com",
+    "url": "https://shirotech.com/"
+  },
+  "contributors": [
+    {
+      "name": "Van Nguyen",
+      "email": "van@shirotech.com",
+      "url": "https://shirotech.com/"
+    }
+  ],
+  "engines": {
+    "node" : ">=5.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/van-nguyen/webpack-cdn-plugin/issues"
+  },
+  "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
+  "dependencies": {
+    "html-webpack-include-assets-plugin": "^0.0.5"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.6.0",
+    "jasmine-spec-reporter": "^4.1.0"
+  }
+}
