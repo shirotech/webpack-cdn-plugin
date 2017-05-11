@@ -8,7 +8,7 @@ const paramsRegex = /:([a-z]+)/gi;
 
 const urlMap = new Map([
   [true, '//unpkg.com/:name@:version/:path'],
-  [false, `${node_modules}/:name/:path`]
+  [false, `/${path.relative(__dirname, node_modules)}/:name/:path`]
 ]);
 
 class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
