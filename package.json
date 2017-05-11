@@ -1,6 +1,6 @@
 {
   "name": "webpack-cdn-plugin",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
   "main": "index.js",
   "scripts": {
