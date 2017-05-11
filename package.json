@@ -4,6 +4,7 @@
   "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
   "main": "index.js",
   "scripts": {
+    "start": "cd example && webpack --config webpack.config.js",
     "test": "istanbul cover jasmine"
   },
   "repository": {
@@ -11,7 +12,9 @@
     "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "example/*",
+    "README.md"
   ],
   "keywords": [
     "webpack",
@@ -49,8 +52,10 @@
     "html-webpack-include-assets-plugin": "^0.0.5"
   },
   "devDependencies": {
+    "html-webpack-plugin": "^2.28.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.6.0",
-    "jasmine-spec-reporter": "^4.1.0"
+    "jasmine-spec-reporter": "^4.1.0",
+    "webpack": "^2.5.1"
   }
 }
