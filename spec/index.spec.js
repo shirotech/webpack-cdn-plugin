@@ -24,6 +24,29 @@ describe('WebpackCdnPlugin', () => {
 
   });
 
+  describe('apply()', () => {
+
+    let cdn;
+    const plugin = () => {};
+
+    beforeEach(() => {
+      cdn = new WebpackCdnPlugin(modules);
+    });
+
+    it('empty', () => {
+      const compiler = {options: {}, plugin};
+      cdn.apply(compiler);
+      expect(compiler.options.externals).toEqual({istanbul: 'istanbul', jasmine: 'jasmine'});
+    });
+
+    it('existing', () => {
+      const compiler = {options: {externals: {foo: 'bar'}}, plugin};
+      cdn.apply(compiler);
+      expect(compiler.options.externals).toEqual({foo: 'bar', istanbul: 'istanbul', jasmine: 'jasmine'});
+    });
+
+  });
+
   describe('getAssets()', () => {
 
     it('node_modules', () => {
