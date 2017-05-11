@@ -14,6 +14,6 @@ module.exports = {
     new WebpackCdnPlugin([
       { name: 'istanbul' },
       { name: 'jasmine' }
-    ])
+    ], process.env.NODE_ENV === 'production')
   ]
 };

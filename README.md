@@ -26,6 +26,7 @@ Require the plugin in your webpack config:
 
 ```javascript
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackCdnPlugin = require('webpack-cdn-plugin');
 ```
 
 Add the plugin to your webpack config:
@@ -63,6 +64,23 @@ This will generate an `index.html` file with something like below:
   <body>
   <script type="text/javascript" src="//unpkg.com/vue@2.3.3/dist/vue.runtime.common.js"></script>
   <script type="text/javascript" src="//unpkg.com/vue-router@2.5.3/dist/vue-router.common.js"></script>
+  </body>
+</html>
+```
+
+When you set the 2nd param to `false`, it will output urls using node_modules folder locally, so you might need to expose it as some sort of static route.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Webpack App</title>
+    <link href="/node_modules/vue/dist/vue.css" rel="stylesheet">
+  </head>
+  <body>
+  <script type="text/javascript" src="/node_modules/vue/dist/vue.runtime.common.js"></script>
+  <script type="text/javascript" src="/node_modules/vue-router/dist/vue-router.common.js"></script>
   </body>
 </html>
 ```
