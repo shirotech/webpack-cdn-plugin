@@ -28,7 +28,7 @@ class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
 
     const externals = {};
     this.modules.forEach((p) => {
-      externals[p.name] = externals;
+      externals[p.name] = p.var || p.name;
     });
 
     compiler.options.externals = externals;
