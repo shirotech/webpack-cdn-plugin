@@ -1,5 +1,8 @@
 ## CDN extension for the HTML Webpack Plugin
 
+[![Build Status](https://travis-ci.org/van-nguyen/webpack-cdn-plugin.svg?branch=master)](https://travis-ci.org/van-nguyen/webpack-cdn-plugin)
+[![codecov](https://codecov.io/gh/van-nguyen/webpack-cdn-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/van-nguyen/webpack-cdn-plugin)
+
 Enhances [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) functionality by allowing you to specify the modules you want to externalize from node_modules in development and a CDN in production.
 
 Basically this will allow you to greatly reduce build time when developing and improve page load performance on production.
