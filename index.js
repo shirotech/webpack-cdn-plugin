@@ -8,14 +8,14 @@ const paramsRegex = /:([a-z]+)/gi;
 
 class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
 
-  constructor({modules, prod = true, prodUrl = '//unpkg.com/:name@:version/:path', devUrl = '/node_modules/:name/:path'}) {
+  constructor({
+                modules, prod = true,
+                prodUrl = '//unpkg.com/:name@:version/:path',
+                devUrl = '/node_modules/:name/:path',
+                append = false, publicPath = false
+  }) {
     const url = prod ? prodUrl : devUrl;
-
-    super({
-      assets: WebpackCdnPlugin.getAssets(modules, url),
-      append: false,
-      publicPath: false
-    });
+    super({ assets: WebpackCdnPlugin.getAssets(modules, url), append, publicPath });
 
     this.modules = modules;
     this.url = url;
