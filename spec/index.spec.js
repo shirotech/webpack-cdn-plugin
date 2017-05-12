@@ -18,8 +18,12 @@ describe('WebpackCdnPlugin', () => {
 
   describe('constructor()', () => {
 
-    it('instantiates', () => {
-      expect(new WebpackCdnPlugin(modules)).toBeDefined();
+    it('prod is true', () => {
+      expect(new WebpackCdnPlugin({modules, prod: true}).url).toBe('//unpkg.com/:name@:version/:path');
+    });
+
+    it('prod is false', () => {
+      expect(new WebpackCdnPlugin({modules, prod: false}).url).toBe('/node_modules/:name/:path');
     });
 
   });
@@ -30,16 +34,16 @@ describe('WebpackCdnPlugin', () => {
     const plugin = () => {};
 
     beforeEach(() => {
-      cdn = new WebpackCdnPlugin(modules);
+      cdn = new WebpackCdnPlugin({modules});
     });
 
-    it('empty', () => {
+    it('externals is empty', () => {
       const compiler = {options: {}, plugin};
       cdn.apply(compiler);
       expect(compiler.options.externals).toEqual({istanbul: 'istanbul', jasmine: 'jasmine'});
     });
 
-    it('existing', () => {
+    it('externals is not empty', () => {
       const compiler = {options: {externals: {foo: 'bar'}}, plugin};
       cdn.apply(compiler);
       expect(compiler.options.externals).toEqual({foo: 'bar', istanbul: 'istanbul', jasmine: 'jasmine'});

@@ -89,11 +89,11 @@ You can also use your own custom html template, please refer to [html-webpack-pl
 
 Please see the [example](example) folder for a basic working example.
 
-### Parameters
+### Configuration
 
-The Parameters you can pass in the following order: `modules`, `prod`, `url`
+You can pass an object options to WebpackCdnPlugin. Allowed values are as follows:
 
-#### `modules`:`array`
+##### `modules`:`array`
 
 The available options for each module, which is part of an array.
 
@@ -113,11 +113,11 @@ You can specify a path to the main file that will be used, this is useful when y
 
 If the module comes with style sheets, you can also specify it as a path.
 
-#### `prod`:`boolean` | `true`
+##### `prod`:`boolean` | `true`
 
 `prod` flag defaults to `true`, which will output uri using the CDN, when `false` it will use the file from `node_modules` folder locally.
 
-#### `url`:`string` | `//unpkg.com/:name@:version/:path`
+##### `prodUrl`:`string` | `//unpkg.com/:name@:version/:path`
 
 You can specify a custom template url with the following replacement strings:
 
@@ -129,8 +129,12 @@ You can specify a custom template url with the following replacement strings:
 
 A common example is you can use cdnjs e.g. `//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path`. If not specified it will fallback to using unpkg.com.
 
+##### `devUrl`:`string` | `/node_modules/:name/:path`
+
+Similar to `prodUrl`, this option overrides the default template url for when `prod` is `false`
+
 ### Contribution
 
 This is a pretty simple plugin and caters mostly for my needs. However, I have made it as flexible and customizable as possible.
 
-If you do find any bugs, do please report it in the [issues](/../../issues) or can help improve the codebase, [pull requests](/../../pulls) are mostly welcome.
+If you happen to find any bugs, do please report it in the [issues](/../../issues) or can help improve the codebase, [pull requests](/../../pulls) are always welcomed.

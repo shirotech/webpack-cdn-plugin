@@ -6,14 +6,11 @@ const node_modules = module.paths.find(p => fs.existsSync(p));
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
 
-const urlMap = new Map([
-  [true, '//unpkg.com/:name@:version/:path'],
-  [false, `/${path.relative(__dirname, node_modules)}/:name/:path`]
-]);
-
 class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
 
-  constructor(modules, prod = true, url = urlMap.get(prod)) {
+  constructor({modules, prod = true, prodUrl = '//unpkg.com/:name@:version/:path', devUrl = '/node_modules/:name/:path'}) {
+    const url = prod ? prodUrl : devUrl;
+
     super({
       assets: WebpackCdnPlugin.getAssets(modules, url),
       append: false,
@@ -21,6 +18,7 @@ class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
     });
 
     this.modules = modules;
+    this.url = url;
   }
 
   apply(compiler) {
