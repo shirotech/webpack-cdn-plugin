@@ -4,7 +4,10 @@ coverage:
   range: 99...100
 
   status:
-    project: true
+    project:
+      default:
+        target: auto
+        if_not_found: success
     patch: true
     changes: false
 
