@@ -11,11 +11,14 @@ class WebpackCdnPlugin extends HtmlWebpackIncludeAssetsPlugin {
   constructor({
                 modules, prod = true,
                 prodUrl = '//unpkg.com/:name@:version/:path',
-                devUrl = '/node_modules/:name/:path',
-                append = false, publicPath = false
+                devUrl = '/:name/:path', append = false, publicPath
   }) {
     const url = prod ? prodUrl : devUrl;
-    super({ assets: WebpackCdnPlugin.getAssets(modules, url), append, publicPath });
+
+    super({
+      assets: WebpackCdnPlugin.getAssets(modules, url), append,
+      publicPath: prod ? false : publicPath
+    });
 
     this.modules = modules;
     this.url = url;

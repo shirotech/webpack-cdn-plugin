@@ -23,7 +23,7 @@ describe('WebpackCdnPlugin', () => {
     });
 
     it('prod is false', () => {
-      expect(new WebpackCdnPlugin({modules, prod: false}).url).toBe('/node_modules/:name/:path');
+      expect(new WebpackCdnPlugin({modules, prod: false}).url).toBe('/:name/:path');
     });
 
   });
