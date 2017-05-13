@@ -13,7 +13,6 @@
   },
   "files": [
     "index.js",
-    "example/*",
     "README.md"
   ],
   "keywords": [

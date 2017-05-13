@@ -67,6 +67,7 @@ This will generate an `index.html` file with something like below:
   <body>
   <script type="text/javascript" src="//unpkg.com/vue@2.3.3/dist/vue.runtime.common.js"></script>
   <script type="text/javascript" src="//unpkg.com/vue-router@2.5.3/dist/vue-router.common.js"></script>
+  <script type="text/javascript" src="/assets/app.js"></script>
   </body>
 </html>
 ```
@@ -84,6 +85,7 @@ When you set the 2nd param to `false`, it will output urls using node_modules fo
   <body>
   <script type="text/javascript" src="/node_modules/vue/dist/vue.runtime.common.js"></script>
   <script type="text/javascript" src="/node_modules/vue-router/dist/vue-router.common.js"></script>
+  <script type="text/javascript" src="/assets/app.js"></script>
   </body>
 </html>
 ```
@@ -135,6 +137,14 @@ A common example is you can use cdnjs e.g. `//cdnjs.cloudflare.com/ajax/libs/:na
 ##### `devUrl`:`string` | `/node_modules/:name/:path`
 
 Similar to `prodUrl`, this option overrides the default template url for when `prod` is `false`
+
+##### `append`:`boolean` | `false`
+
+Makes the assets appear before `false` or after `true` then bundle.
+
+##### `publicPath`:`string` (optional)
+
+Overrides the global publicPath that was set in `webpack.options.output.publicPath`, note this is always `false` when prod is `true` so that it makes use of the CDN location because it is a remote resource.
 
 ### Contribution
 

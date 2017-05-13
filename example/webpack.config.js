@@ -6,14 +6,19 @@ const WebpackCdnPlugin = require('../');
 module.exports = {
   entry: path.join(__dirname, 'app.js'),
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'dist/assets'),
+    publicPath: '/assets',
     filename: 'app.js'
   },
   plugins: [
-    new HtmlWebpackPlugin(),
-    new WebpackCdnPlugin([
-      { name: 'istanbul' },
-      { name: 'jasmine' }
-    ], process.env.NODE_ENV === 'production')
+    new HtmlWebpackPlugin({ filename: '../index.html' }), // output file relative to output.path
+    new WebpackCdnPlugin({
+      modules: [
+        { name: 'istanbul' },
+        { name: 'jasmine' }
+      ],
+      prod: process.env.NODE_ENV === 'production',
+      publicPath: '/node_modules' // override when prod is false
+    })
   ]
 };
