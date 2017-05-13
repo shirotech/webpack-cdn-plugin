@@ -39,16 +39,19 @@ module.exports = {
   // ...
   plugins: [
     new HtmlWebpackPlugin(),
-    new WebpackCdnPlugin([
-      {
-        name: 'vue',
-        var: 'Vue',
-        style: 'dist/vue.css'
-      },
-      {
-        name: 'vue-router'
-      }
-    ])
+    new WebpackCdnPlugin({
+      modules: [
+        {
+          name: 'vue',
+          var: 'Vue',
+          style: 'dist/vue.css'
+        },
+        {
+          name: 'vue-router'
+        }
+      ],
+      publicPath: '/node_modules'
+    })
   ]
   // ...
 };
@@ -72,7 +75,7 @@ This will generate an `index.html` file with something like below:
 </html>
 ```
 
-When you set the 2nd param to `false`, it will output urls using node_modules folder locally, so you might need to expose it as some sort of static route.
+When you set `prod` to `false`, it will output urls using `publicPath`, so you might need to expose it as some sort of static route.
 
 ```html
 <!DOCTYPE html>
