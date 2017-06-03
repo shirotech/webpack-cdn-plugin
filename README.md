@@ -137,17 +137,13 @@ You can specify a custom template url with the following replacement strings:
 
 A common example is you can use cdnjs e.g. `//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path`. If not specified it will fallback to using unpkg.com.
 
-##### `devUrl`:`string` | `/node_modules/:name/:path`
+##### `devUrl`:`string` | `/:name/:path`
 
 Similar to `prodUrl`, this option overrides the default template url for when `prod` is `false`
 
-##### `append`:`boolean` | `false`
-
-Makes the assets appear before `false` or after `true` then bundle.
-
 ##### `publicPath`:`string` (optional)
 
-Overrides the global publicPath that was set in `webpack.options.output.publicPath`, note this is always `false` when prod is `true` so that it makes use of the CDN location because it is a remote resource.
+Prefixes the assets with this string, if none is provided it will fallback to the one set globally in `webpack.options.output.publicPath`, note that this is always `false` when prod is `true` so that it makes use of the CDN location because it is a remote resource.
 
 ### Contribution
 
