@@ -143,7 +143,7 @@ Similar to `prodUrl`, this option overrides the default template url for when `p
 
 ##### `publicPath`:`string` (optional)
 
-Prefixes the assets with this string, if none is provided it will fallback to the one set globally in `webpack.options.output.publicPath`, note that this is always `false` when prod is `true` so that it makes use of the CDN location because it is a remote resource.
+Prefixes the assets with this string, if none is provided it will fallback to the one set globally in `webpack.options.output.publicPath`, note that this is always empty when prod is `true` so that it makes use of the CDN location because it is a remote resource.
 
 ### Contribution
 

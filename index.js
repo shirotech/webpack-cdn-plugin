@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const PROD = 'prod';
 const node_modules = module.paths.find(p => fs.existsSync(p));
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
@@ -10,15 +11,15 @@ class WebpackCdnPlugin {
   constructor({
                 modules, prod = true,
                 prodUrl = '//unpkg.com/:name@:version/:path',
-                devUrl = '/:name/:path', publicPath
+                devUrl = '/:name/:path', publicPath = PROD
   }) {
     this.modules = modules;
-    this.prefix = prod ? '' : publicPath || '';
+    this.prefix = prod ? PROD : publicPath;
     this.url = prod ? prodUrl : devUrl;
   }
 
   apply(compiler) {
-    this.prefix = compiler.options.publicPath || this.prefix;
+    this.prefix = this.prefix === PROD ? '' : this.prefix || compiler.options.output.publicPath || '';
     const getArgs = [this.modules, this.url, this.prefix];
 
     compiler.plugin('compilation', (compilation) => {

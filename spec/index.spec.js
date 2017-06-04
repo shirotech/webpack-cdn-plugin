@@ -26,7 +26,7 @@ describe('WebpackCdnPlugin', () => {
 
       it('initialises', () => {
         expect(cdn.modules).toBe(modules);
-        expect(cdn.prefix).toBe('');
+        expect(cdn.prefix).toBe('prod');
         expect(cdn.url).toBe('//unpkg.com/:name@:version/:path');
       });
 
@@ -60,7 +60,7 @@ describe('WebpackCdnPlugin', () => {
 
         it('initialises', () => {
           expect(cdn.modules).toBe(modules);
-          expect(cdn.prefix).toBe('');
+          expect(cdn.prefix).toBe(publicPath);
           expect(cdn.url).toBe('/:name/:path');
         });
 
@@ -131,6 +131,26 @@ describe('WebpackCdnPlugin', () => {
 
       it('externals', () => {
         expect(compiler.options.externals).toEqual({foo: 'bar', istanbul: 'istanbul', jasmine: 'jasmine'});
+      });
+
+    });
+
+    describe('publicPath from options', () => {
+
+      beforeEach(() => {
+        compiler = {options: {output: {publicPath: false}}, plugin};
+        cdn.prefix = null;
+        cdn.apply(compiler);
+      });
+
+      it('assets', () => {
+        expect(data.assets.css.length).toBe(1);
+        expect(data.assets.js.length).toBe(2);
+        expect(callback).toHaveBeenCalledWith(null, data);
+      });
+
+      it('externals', () => {
+        expect(compiler.options.externals).toEqual({istanbul: 'istanbul', jasmine: 'jasmine'});
       });
 
     });
