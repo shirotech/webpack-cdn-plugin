@@ -10,9 +10,9 @@ let cssAssets, jsAssets;
 
 describe('Webpack Integration', () => {
 
-  describe('When prod is true', () => {
+  describe('When `prod` is true', () => {
 
-    describe('When prodUrl is default', () => {
+    describe('When `prodUrl` is default', () => {
 
       beforeAll((done) => {
         runWebpack(done, getConfig({prod: true}));
@@ -27,6 +27,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          '//unpkg.com/jasmine-spec-reporter@4.1.0/built/main.js',
           '//unpkg.com/istanbul@0.4.5/index.js',
           '//unpkg.com/jasmine@2.6.0/lib/jasmine.js',
           '/assets/app.js'
@@ -35,7 +36,7 @@ describe('Webpack Integration', () => {
 
     });
 
-    describe('When prodUrl is set', () => {
+    describe('When `prodUrl` is set', () => {
 
       beforeAll((done) => {
         runWebpack(done, getConfig({prod: true, prodUrl: '//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path'}));
@@ -50,6 +51,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.0/built/main.js',
           '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.6.0/lib/jasmine.js',
           '/assets/app.js'
@@ -60,32 +62,33 @@ describe('Webpack Integration', () => {
 
   });
 
-  describe('When prod is false', () => {
+  describe('When `prod` is false', () => {
 
-    describe('publicPath is default', () => {
+    describe('When `publicPath` is default', () => {
 
       beforeAll((done) => {
-        runWebpack(done, getConfig({prod: false, publicPath: null}));
+        runWebpack(done, getConfig({prod: false, publicPath: null, publicPath2: null}));
       });
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          '/assets/istanbul/style.css',
-          '/assets/jasmine/style.css'
+          '/istanbul/style.css',
+          '/jasmine/style.css'
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '/assets/istanbul/index.js',
-          '/assets/jasmine/lib/jasmine.js',
-          '/assets/app.js'
+          '/jasmine-spec-reporter/built/main.js',
+          '/istanbul/index.js',
+          '/jasmine/lib/jasmine.js',
+          'assets/app.js'
         ]);
       });
 
     });
 
-    describe('publicPath is set', () => {
+    describe('When `publicPath` is set', () => {
 
       beforeAll((done) => {
         runWebpack(done, getConfig({prod: false}));
@@ -100,6 +103,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          '/node_modules/jasmine-spec-reporter/built/main.js',
           '/node_modules/istanbul/index.js',
           '/node_modules/jasmine/lib/jasmine.js',
           '/assets/app.js'
@@ -137,9 +141,19 @@ function runWebpack(callback, config) {
   });
 }
 
-function getConfig({prod, publicPath = '/node_modules', prodUrl}) {
+function getConfig({prod, publicPath = '/node_modules', publicPath2 = '/assets', prodUrl}) {
+  const output = {
+    path: path.join(__dirname, 'dist/assets'),
+    filename: 'app.js'
+  };
+
+  if (publicPath2) {
+    output.publicPath = publicPath2;
+  }
+
   const options = {
     modules: [
+      { name: 'jasmine-spec-reporter' },
       { name: 'istanbul', style: 'style.css' },
       { name: 'jasmine', style: 'style.css' }
     ], prod, prodUrl
@@ -151,11 +165,7 @@ function getConfig({prod, publicPath = '/node_modules', prodUrl}) {
 
   return {
     entry: path.join(__dirname, '../example/app.js'),
-    output: {
-      path: path.join(__dirname, 'dist/assets'),
-      publicPath: '/assets',
-      filename: 'app.js'
-    },
+    output,
     plugins: [
       new HtmlWebpackPlugin({ filename: '../index.html' }),
       new WebpackCdnPlugin(options)
