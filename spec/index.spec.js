@@ -26,7 +26,7 @@ describe('WebpackCdnPlugin', () => {
 
       it('initialises', () => {
         expect(cdn.modules).toBe(modules);
-        expect(cdn.prefix).toBe('prod');
+        expect(cdn.prefix).toBe('');
         expect(cdn.url).toBe('//unpkg.com/:name@:version/:path');
       });
 

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const PROD = 'prod';
+const empty = '';
 const node_modules = module.paths.find(p => fs.existsSync(p));
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
@@ -11,15 +11,15 @@ class WebpackCdnPlugin {
   constructor({
                 modules, prod = true,
                 prodUrl = '//unpkg.com/:name@:version/:path',
-                devUrl = '/:name/:path', publicPath = PROD
+                devUrl = '/:name/:path', publicPath
   }) {
     this.modules = modules;
-    this.prefix = prod ? PROD : publicPath;
+    this.prefix = prod ? empty : publicPath;
     this.url = prod ? prodUrl : devUrl;
   }
 
   apply(compiler) {
-    this.prefix = this.prefix === PROD ? '' : this.prefix || compiler.options.output.publicPath || '';
+    this.prefix = this.prefix === empty ? empty : this.prefix || compiler.options.output.publicPath || empty;
     const getArgs = [this.modules, this.url, this.prefix];
 
     compiler.plugin('compilation', (compilation) => {
@@ -38,7 +38,7 @@ class WebpackCdnPlugin {
     compiler.options.externals = externals;
   }
 
-  static _getCss(modules, url, prefix = '') {
+  static _getCss(modules, url, prefix = empty) {
     return modules.filter((p) => p.style).map((p) => {
       p.version = p.version || require(path.join(node_modules, p.name, packageJson)).version;
       p.path = p.style;
@@ -46,7 +46,7 @@ class WebpackCdnPlugin {
     });
   }
 
-  static _getJs(modules, url, prefix = '') {
+  static _getJs(modules, url, prefix = empty) {
     return modules.map((p) => {
       p.version = p.version || require(path.join(node_modules, p.name, packageJson)).version;
       p.path = require.resolve(p.name).split(`/node_modules/${p.name}/`).pop();
