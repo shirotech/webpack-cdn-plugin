@@ -24,8 +24,8 @@ class WebpackCdnPlugin {
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
-        data.assets.css = WebpackCdnPlugin._getCss(...getArgs).concat(data.assets.css);
         data.assets.js = WebpackCdnPlugin._getJs(...getArgs).concat(data.assets.js);
+        data.assets.css = WebpackCdnPlugin._getCss(...getArgs).concat(data.assets.css);
         callback(null, data);
       });
     });
@@ -49,7 +49,7 @@ class WebpackCdnPlugin {
   static _getJs(modules, url, prefix = empty) {
     return modules.map((p) => {
       p.version = p.version || require(path.join(node_modules, p.name, packageJson)).version;
-      p.path = require.resolve(p.name).split(`/node_modules/${p.name}/`).pop();
+      p.path = p.path || require.resolve(p.name).split(`/node_modules/${p.name}/`).pop();
       return prefix + url.replace(paramsRegex, (m, p1) => p[p1]);
     });
   }

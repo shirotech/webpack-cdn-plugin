@@ -27,7 +27,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//unpkg.com/jasmine-spec-reporter@4.1.0/built/main.js',
+          '//unpkg.com/jasmine-spec-reporter@4.1.0/index.js',
           '//unpkg.com/istanbul@0.4.5/index.js',
           '//unpkg.com/jasmine@2.6.0/lib/jasmine.js',
           '/assets/app.js'
@@ -51,7 +51,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.0/built/main.js',
+          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.0/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.6.0/lib/jasmine.js',
           '/assets/app.js'
@@ -79,7 +79,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '/jasmine-spec-reporter/built/main.js',
+          '/jasmine-spec-reporter/index.js',
           '/istanbul/index.js',
           '/jasmine/lib/jasmine.js',
           'assets/app.js'
@@ -103,7 +103,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '/node_modules/jasmine-spec-reporter/built/main.js',
+          '/node_modules/jasmine-spec-reporter/index.js',
           '/node_modules/istanbul/index.js',
           '/node_modules/jasmine/lib/jasmine.js',
           '/assets/app.js'
@@ -153,7 +153,7 @@ function getConfig({prod, publicPath = '/node_modules', publicPath2 = '/assets',
 
   const options = {
     modules: [
-      { name: 'jasmine-spec-reporter' },
+      { name: 'jasmine-spec-reporter', path: 'index.js' },
       { name: 'istanbul', style: 'style.css' },
       { name: 'jasmine', style: 'style.css' }
     ], prod, prodUrl
