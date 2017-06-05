@@ -82,7 +82,31 @@ describe('Webpack Integration', () => {
           '/jasmine-spec-reporter/index.js',
           '/istanbul/index.js',
           '/jasmine/lib/jasmine.js',
-          'assets/app.js'
+          '/app.js'
+        ]);
+      });
+
+    });
+
+    describe('When `publicPath` is `/`', () => {
+
+      beforeAll((done) => {
+        runWebpack(done, getConfig({prod: false, publicPath: null, publicPath2: '/'}));
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual([
+          '/istanbul/style.css',
+          '/jasmine/style.css'
+        ]);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          '/jasmine-spec-reporter/index.js',
+          '/istanbul/index.js',
+          '/jasmine/lib/jasmine.js',
+          '/app.js'
         ]);
       });
 
