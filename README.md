@@ -20,7 +20,7 @@ npm install webpack-cdn-plugin --save-dev
 or yarn
 
 ```bash
-yarn add webpack-cdn-plugin
+yarn add webpack-cdn-plugin --dev
 ```
 
 ### Basic Usage
