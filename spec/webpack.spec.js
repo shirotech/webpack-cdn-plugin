@@ -27,7 +27,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//unpkg.com/jasmine-spec-reporter@4.1.0/index.js',
+          '//unpkg.com/jasmine-spec-reporter@4.1.1/index.js',
           '//unpkg.com/istanbul@0.4.5/index.js',
           '//unpkg.com/jasmine@2.6.0/lib/jasmine.js',
           '/assets/app.js'
@@ -51,7 +51,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.0/index.js',
+          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.1/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.6.0/lib/jasmine.js',
           '/assets/app.js'
