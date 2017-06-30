@@ -2,7 +2,7 @@
   "name": "webpack-cdn-plugin",
   "version": "1.3.4",
   "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
-  "main": "index.js",
+  "main": "dist.js",
   "scripts": {
     "start": "webpack --config example/webpack.config.js",
     "test": "istanbul cover jasmine",
@@ -15,6 +15,7 @@
   },
   "files": [
     "index.js",
+    "dist.js",
     "README.md"
   ],
   "keywords": [
