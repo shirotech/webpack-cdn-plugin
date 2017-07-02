@@ -34,7 +34,7 @@ class WebpackCdnPlugin {
       this.prefix += slash;
     }
 
-    const getArgs = [this.modules, this.url, this.prefix];
+    const getArgs = [this.modules, this.url, this.prefix, this.prod];
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
@@ -56,19 +56,33 @@ class WebpackCdnPlugin {
     return require(path.join(node_modules, name, packageJson)).version;
   }
 
-  static _getCss(modules, url, prefix = empty) {
+  static _getCss(modules, url, prefix = empty, prod = false) {
     return modules.filter((p) => p.style).map((p) => {
       p.version = WebpackCdnPlugin._getVersion(p.name);
       p.path = p.style;
-      return prefix + url.replace(paramsRegex, (m, p1) => p[p1]);
+
+      return prefix + url.replace(paramsRegex, (m, p1) => {
+        if (prod && p.cdn && p1 === 'name') {
+          return p.cdn;
+        }
+
+        return p[p1];
+      });
     });
   }
 
-  static _getJs(modules, url, prefix = empty) {
+  static _getJs(modules, url, prefix = empty, prod = false) {
     return modules.map((p) => {
       p.version = WebpackCdnPlugin._getVersion(p.name);
       p.path = p.path || require.resolve(p.name).split(`/node_modules/${p.name}/`).pop();
-      return prefix + url.replace(paramsRegex, (m, p1) => p[p1]);
+
+      return prefix + url.replace(paramsRegex, (m, p1) => {
+        if (prod && p.cdn && p1 === 'name') {
+          return p.cdn;
+        }
+
+        return p[p1];
+      });
     });
   }
 
