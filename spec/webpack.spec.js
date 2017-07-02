@@ -21,7 +21,7 @@ describe('Webpack Integration', () => {
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
           '//unpkg.com/istanbul@0.4.5/style.css',
-          '//unpkg.com/jasmine@2.6.0/style.css'
+          '//unpkg.com/jasmine2@2.6.0/style.css'
         ]);
       });
 
@@ -29,7 +29,7 @@ describe('Webpack Integration', () => {
         expect(jsAssets).toEqual([
           '//unpkg.com/jasmine-spec-reporter@4.1.1/index.js',
           '//unpkg.com/istanbul@0.4.5/index.js',
-          '//unpkg.com/jasmine@2.6.0/lib/jasmine.js',
+          '//unpkg.com/jasmine2@2.6.0/lib/jasmine.js',
           '/assets/app.js'
         ]);
       });
@@ -45,7 +45,7 @@ describe('Webpack Integration', () => {
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
           '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/style.css',
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.6.0/style.css'
+          '//cdnjs.cloudflare.com/ajax/libs/jasmine2/2.6.0/style.css'
         ]);
       });
 
@@ -53,7 +53,7 @@ describe('Webpack Integration', () => {
         expect(jsAssets).toEqual([
           '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.1/index.js',
           '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/index.js',
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.6.0/lib/jasmine.js',
+          '//cdnjs.cloudflare.com/ajax/libs/jasmine2/2.6.0/lib/jasmine.js',
           '/assets/app.js'
         ]);
       });
@@ -179,7 +179,7 @@ function getConfig({prod, publicPath = '/node_modules', publicPath2 = '/assets',
     modules: [
       { name: 'jasmine-spec-reporter', path: 'index.js' },
       { name: 'istanbul', style: 'style.css' },
-      { name: 'jasmine', style: 'style.css' }
+      { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' }
     ], prod, prodUrl
   };
 

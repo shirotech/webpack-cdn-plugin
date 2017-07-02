@@ -109,6 +109,10 @@ The available options for each module, which is part of an array.
 
 The name of the module you want to externalize
 
+`cdn`:`string`
+
+If the name from the CDN resource is different from npm, you can override with this i.e. `moment` is `moment.js` on cdnjs
+
 `var`:`string` (optional)
 
 A variable that will be assigned to the module in global scope, webpack requires this. If not supplied than it will be the same as the name.
