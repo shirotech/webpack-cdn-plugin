@@ -48,7 +48,7 @@
   },
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
-    "html-webpack-plugin": "^2.28.0",
+    "html-webpack-plugin": "^2.29.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.6.0",
     "jasmine-spec-reporter": "^4.1.1",
