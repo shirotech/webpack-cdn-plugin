@@ -154,3 +154,9 @@ Prefixes the assets with this string, if none is provided it will fallback to th
 This is a pretty simple plugin and caters mostly for my needs. However, I have made it as flexible and customizable as possible.
 
 If you happen to find any bugs, do please report it in the [issues](/../../issues) or can help improve the codebase, [pull requests](/../../pulls) are always welcomed.
+
+### Contributors
+
+Many thanks to the following contributors:
+
+- [xiaoiver](/../../../../xiaoiver)
