@@ -74,7 +74,7 @@ class WebpackCdnPlugin {
   static _getJs(modules, url, prefix = empty, prod = false) {
     return modules.map((p) => {
       p.version = WebpackCdnPlugin._getVersion(p.name);
-      p.path = p.path || require.resolve(p.name).split(`/node_modules/${p.name}/`).pop();
+      p.path = p.path || require.resolve(p.name).match(/[\/]node_modules[\/].+?[\/](.*)/)[1].replace(/\\/g, '/');
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
         if (prod && p.cdn && p1 === 'name') {
