@@ -59,14 +59,13 @@ class WebpackCdnPlugin {
   static _getCss(modules, url, prefix = empty, prod = false) {
     return modules.filter((p) => p.style).map((p) => {
       p.version = WebpackCdnPlugin._getVersion(p.name);
-      p.path = p.style;
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
         if (prod && p.cdn && p1 === 'name') {
           return p.cdn;
         }
 
-        return p[p1];
+        return p[p1 === 'path' ? 'style' : p1];
       });
     });
   }
