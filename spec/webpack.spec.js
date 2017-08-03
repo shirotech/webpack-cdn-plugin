@@ -8,6 +8,12 @@ const jsMatcher = /<script type="text\/javascript" src="(.+?)">/g;
 
 let cssAssets, jsAssets;
 
+const versions = {
+  jasmine: WebpackCdnPlugin._getVersion('jasmine'),
+  jasmineSpecReporter: WebpackCdnPlugin._getVersion('jasmine-spec-reporter'),
+  istanbul: WebpackCdnPlugin._getVersion('istanbul')
+};
+
 describe('Webpack Integration', () => {
 
   describe('When `prod` is true', () => {
@@ -20,16 +26,16 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          '//unpkg.com/istanbul@0.4.5/style.css',
-          '//unpkg.com/jasmine2@2.6.0/style.css'
+          `//unpkg.com/istanbul@${versions.istanbul}/style.css`,
+          `//unpkg.com/jasmine2@${versions.jasmine}/style.css`
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//unpkg.com/jasmine-spec-reporter@4.1.1/index.js',
-          '//unpkg.com/istanbul@0.4.5/index.js',
-          '//unpkg.com/jasmine2@2.6.0/lib/jasmine.js',
+          `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
+          `//unpkg.com/istanbul@${versions.istanbul}/index.js`,
+          `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js'
         ]);
       });
@@ -44,16 +50,16 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/style.css',
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine2/2.6.0/style.css'
+          `//cdnjs.cloudflare.com/ajax/libs/istanbul/${versions.istanbul}/style.css`,
+          `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/style.css`
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/4.1.1/index.js',
-          '//cdnjs.cloudflare.com/ajax/libs/istanbul/0.4.5/index.js',
-          '//cdnjs.cloudflare.com/ajax/libs/jasmine2/2.6.0/lib/jasmine.js',
+          `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${versions.jasmineSpecReporter}/index.js`,
+          `//cdnjs.cloudflare.com/ajax/libs/istanbul/${versions.istanbul}/index.js`,
+          `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js'
         ]);
       });
