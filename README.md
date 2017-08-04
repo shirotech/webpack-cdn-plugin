@@ -109,7 +109,7 @@ The available options for each module, which is part of an array.
 
 The name of the module you want to externalize
 
-`cdn`:`string`
+`cdn`:`string` (optional)
 
 If the name from the CDN resource is different from npm, you can override with this i.e. `moment` is `moment.js` on cdnjs
 
