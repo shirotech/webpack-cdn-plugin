@@ -125,9 +125,9 @@ You can specify a path to the main file that will be used, this is useful when y
 
 If the module comes with style sheets, you can also specify it as a path.
 
-`pureCss`:`boolean` | `false`
+`cssOnly`:`boolean` | `false`
 
-If the module is just a css library, you can specify `pureCss` to `true`, it will ignore path.
+If the module is just a css library, you can specify `cssOnly` to `true`, it will ignore path.
 
 ##### `prod`:`boolean` | `true`
 
