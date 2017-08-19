@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack --config example/webpack.config.js",
-    "test": "istanbul cover jasmine",
+    "test": "eslint {src.js,spec/*.js} --fix && istanbul cover jasmine",
     "build": "buble -i src.js -o dist.js",
+    "commitmsg": "validate-commit-msg",
+    "precommit": "npm test",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -53,11 +55,15 @@
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
     "buble": "^0.15.2",
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0",
     "html-webpack-plugin": "^2.30.1",
+    "husky": "^0.14.3",
     "istanbul": "^0.4.5",
     "jasmine": "^2.7.0",
     "jasmine-spec-reporter": "^4.2.1",
-    "semver": "^5.4.1",
+    "validate-commit-msg": "^2.14.0",
     "webpack": "^3.5.5"
   }
 }

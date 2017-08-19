@@ -8,17 +8,17 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist/assets'),
     publicPath: '/assets',
-    filename: 'app.js'
+    filename: 'app.js',
   },
   plugins: [
     new HtmlWebpackPlugin({ filename: '../index.html' }), // output file relative to output.path
     new WebpackCdnPlugin({
       modules: [
         { name: 'istanbul' },
-        { name: 'jasmine' }
+        { name: 'jasmine' },
       ],
       prod: process.env.NODE_ENV === 'production',
-      publicPath: '/node_modules' // override when prod is false
-    })
-  ]
+      publicPath: '/node_modules', // override when prod is false
+    }),
+  ],
 };

@@ -3,16 +3,15 @@ const path = require('path');
 
 const empty = '';
 const slash = '/';
-const node_modules = module.paths.find(p => fs.existsSync(p));
+const nodeModules = module.paths.find(p => fs.existsSync(p));
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
 
 class WebpackCdnPlugin {
-
   constructor({
-                modules, prod = true,
-                prodUrl = '//unpkg.com/:name@:version/:path',
-                devUrl = ':name/:path', publicPath
+    modules, prod = true,
+    prodUrl = '//unpkg.com/:name@:version/:path',
+    devUrl = ':name/:path', publicPath,
   }) {
     this.modules = modules;
     this.prod = prod;
@@ -52,13 +51,13 @@ class WebpackCdnPlugin {
     compiler.options.externals = externals;
   }
 
-  static _getVersion(name) {
-    return require(path.join(node_modules, name, packageJson)).version;
+  static getVersion(name) {
+    return require(path.join(nodeModules, name, packageJson)).version;
   }
 
   static _getCss(modules, url, prefix = empty, prod = false) {
-    return modules.filter((p) => p.style).map((p) => {
-      p.version = WebpackCdnPlugin._getVersion(p.name);
+    return modules.filter(p => p.style).map((p) => {
+      p.version = WebpackCdnPlugin.getVersion(p.name);
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
         if (prod && p.cdn && p1 === 'name') {
@@ -71,8 +70,8 @@ class WebpackCdnPlugin {
   }
 
   static _getJs(modules, url, prefix = empty, prod = false) {
-    return modules.filter((p) => !p.cssOnly).map((p) => {
-      p.version = WebpackCdnPlugin._getVersion(p.name);
+    return modules.filter(p => !p.cssOnly).map((p) => {
+      p.version = WebpackCdnPlugin.getVersion(p.name);
       p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
@@ -84,9 +83,8 @@ class WebpackCdnPlugin {
       });
     });
   }
-
 }
 
-WebpackCdnPlugin.node_modules = node_modules;
+WebpackCdnPlugin.node_modules = nodeModules;
 
 module.exports = WebpackCdnPlugin;
