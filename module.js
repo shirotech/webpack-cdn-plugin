@@ -2,6 +2,7 @@ import path from 'path';
 
 const empty = '';
 const slash = '/';
+const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
 
 class WebpackCdnPlugin {
@@ -49,7 +50,7 @@ class WebpackCdnPlugin {
   }
 
   static getVersion(name) {
-    return require(name).version;
+    return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
   }
 
   static _getCss(modules, url, prefix, prod) {
@@ -87,5 +88,7 @@ class WebpackCdnPlugin {
     });
   }
 }
+
+WebpackCdnPlugin.node_modules = path.join(__dirname, '..');
 
 export default WebpackCdnPlugin;

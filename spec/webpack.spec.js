@@ -9,6 +9,8 @@ const jsMatcher = /<script type="text\/javascript" src="(.+?)">/g;
 let cssAssets;
 let jsAssets;
 
+WebpackCdnPlugin.node_modules = path.join(__dirname, '../node_modules');
+
 const versions = {
   jasmine: WebpackCdnPlugin.getVersion('jasmine'),
   jasmineSpecReporter: WebpackCdnPlugin.getVersion('jasmine-spec-reporter'),
