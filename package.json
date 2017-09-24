@@ -15,6 +15,7 @@
     "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
   },
   "files": [
+    ".babelrc",
     "module.js",
     "README.md"
   ],
@@ -51,8 +52,6 @@
   },
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-env": "^1.6.0",
     "babel-register": "^6.26.0",
     "eslint": "^4.7.2",
     "eslint-config-airbnb-base": "12.0.0",
@@ -66,6 +65,8 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0"
+    "babel-cli": "^6.26.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-env": "^1.6.0"
   }
 }
