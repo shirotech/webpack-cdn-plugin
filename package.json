@@ -6,7 +6,7 @@
   "module": "module.js",
   "scripts": {
     "test": "nyc jasmine",
-    "build": "babel module.js --out-file main.js",
+    "install": "babel module.js --out-file main.js",
     "commitmsg": "validate-commit-msg",
     "precommit": "npm test"
   },
