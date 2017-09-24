@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.26.0",
     "eslint": "^4.7.2",
