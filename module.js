@@ -1,10 +1,7 @@
-import fs from 'fs';
 import path from 'path';
 
 const empty = '';
 const slash = '/';
-const nodeModules = module.paths.find(p => fs.existsSync(p));
-const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
 
 class WebpackCdnPlugin {
@@ -52,7 +49,7 @@ class WebpackCdnPlugin {
   }
 
   static getVersion(name) {
-    return require(path.join(nodeModules, name, packageJson)).version;
+    return require(name).version;
   }
 
   static _getCss(modules, url, prefix, prod) {
@@ -90,7 +87,5 @@ class WebpackCdnPlugin {
     });
   }
 }
-
-WebpackCdnPlugin.node_modules = nodeModules;
 
 export default WebpackCdnPlugin;
