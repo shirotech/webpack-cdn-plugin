@@ -1,8 +1,0 @@
-instrumentation:
-  excludes: ['**/spec/**', '**/index.js']
-reporting:
-  watermarks:
-    statements: [95, 99]
-    lines: [95, 99]
-    functions: [95, 99]
-    branches: [95, 99]

@@ -2,23 +2,20 @@
   "name": "webpack-cdn-plugin",
   "version": "1.5.0",
   "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
-  "main": "index.js",
+  "main": "main.js",
+  "module": "module.js",
   "scripts": {
-    "start": "webpack --config example/webpack.config.js",
-    "test": "eslint {src.js,spec/*.js} --fix && istanbul cover jasmine",
-    "build": "buble -i src.js -o dist.js",
+    "test": "nyc jasmine",
+    "build": "babel module.js --out-file main.js",
     "commitmsg": "validate-commit-msg",
-    "precommit": "npm test",
-    "prepublish": "npm run build"
+    "precommit": "npm test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
   },
   "files": [
-    "index.js",
-    "src.js",
-    "dist.js",
+    "module.js",
     "README.md"
   ],
   "keywords": [
@@ -54,16 +51,20 @@
   },
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
-    "buble": "^0.15.2",
-    "eslint": "^4.5.0",
-    "eslint-config-airbnb-base": "^11.3.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb-base": "12.0.0",
     "eslint-plugin-import": "^2.7.0",
     "html-webpack-plugin": "^2.30.1",
     "husky": "^0.14.3",
-    "istanbul": "^0.4.5",
     "jasmine": "^2.7.0",
     "jasmine-spec-reporter": "^4.2.1",
+    "nyc": "^11.2.1",
     "validate-commit-msg": "^2.14.0",
     "webpack": "^3.5.5"
+  },
+  "dependencies": {
+    "babel-cli": "^6.26.0"
   }
 }

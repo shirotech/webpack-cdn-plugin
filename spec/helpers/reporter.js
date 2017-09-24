@@ -1,4 +1,4 @@
-const SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+import { SpecReporter } from 'jasmine-spec-reporter';
 
 const env = jasmine.getEnv();
 env.clearReporters();

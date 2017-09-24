@@ -1,7 +1,7 @@
 .DS_Store
 /.idea/
+/.nyc_output/
 /coverage/
 /node_modules/
 dist/
-/dist.js
-*.log
+main.js
