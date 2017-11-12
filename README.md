@@ -159,6 +159,11 @@ This is a pretty simple plugin and caters mostly for my needs. However, I have m
 
 If you happen to find any bugs, do please report it in the [issues](/../../issues) or can help improve the codebase, [pull requests](/../../pulls) are always welcomed.
 
+### Resources
+
+- [Webpack vs Gulp](https://shirotech.com/tutorial/webpack-vs-gulp)
+- [Managing your Node.js versions](https://shirotech.com/node-js/managing-your-node-js-versions)
+
 ### Contributors
 
 Many thanks to the following contributors:
