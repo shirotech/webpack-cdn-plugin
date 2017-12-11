@@ -55,7 +55,7 @@ function getConfig({ prod, publicPath = '/node_modules', publicPath2 = '/assets'
   const options = {
     modules: [
       { name: 'jasmine-spec-reporter', path: 'index.js' },
-      { name: 'nyc', style: 'style.css' },
+      { name: 'nyc', style: 'style.css', localStyle: 'local.css', localScript: 'local.js' },
       { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
     ],
     prod,
@@ -86,6 +86,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
+          `/local.css`,
           `//unpkg.com/nyc@${versions.nyc}/style.css`,
           `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
         ]);
@@ -93,6 +94,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          `/local.js`,
           `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
           `//unpkg.com/nyc@${versions.nyc}/index.js`,
           `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
@@ -108,6 +110,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
+          `/local.css`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/style.css`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/style.css`,
         ]);
@@ -115,6 +118,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          `/local.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${versions.jasmineSpecReporter}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
@@ -132,6 +136,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
+          `/local.css`,
           '/nyc/style.css',
           '/jasmine/style.css',
         ]);
@@ -139,6 +144,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          `/local.js`,
           '/jasmine-spec-reporter/index.js',
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js',
@@ -154,6 +160,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
+          `/local.css`,
           '/nyc/style.css',
           '/jasmine/style.css',
         ]);
@@ -161,6 +168,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          `/local.js`,
           '/jasmine-spec-reporter/index.js',
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js',
@@ -176,6 +184,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
+          `/node_modules/local.css`,
           '/node_modules/nyc/style.css',
           '/node_modules/jasmine/style.css',
         ]);
@@ -183,6 +192,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
+          `/node_modules/local.js`,
           '/node_modules/jasmine-spec-reporter/index.js',
           '/node_modules/nyc/index.js',
           '/node_modules/jasmine/lib/jasmine.js',

@@ -129,6 +129,15 @@ If the module comes with style sheets, you can also specify it as a path.
 
 If the module is just a css library, you can specify `cssOnly` to `true`, it will ignore path.
 
+`localScript`:`string` (option)
+
+Useful when you wanted to use your own build version of the library for js files
+
+`localStyle`:`string` (option)
+
+Useful when you wanted to use your own build version of the library for css files
+
+
 ##### `prod`:`boolean` | `true`
 
 `prod` flag defaults to `true`, which will output uri using the CDN, when `false` it will use the file from `node_modules` folder locally.

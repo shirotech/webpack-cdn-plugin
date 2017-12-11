@@ -57,7 +57,7 @@ class WebpackCdnPlugin {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.style).map((p) => {
+    return modules.filter(p => p.localStyle).map((p) => (prefix || '/') + p.localStyle).concat(modules.filter(p => p.style).map((p) => {
       p.version = WebpackCdnPlugin.getVersion(p.name);
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
@@ -67,14 +67,14 @@ class WebpackCdnPlugin {
 
         return p[p1 === 'path' ? 'style' : p1];
       });
-    });
+    }));
   }
 
   static _getJs(modules, url, prefix, prod) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => !p.cssOnly).map((p) => {
+    return modules.filter(p => p.localScript).map((p) => (prefix || '/') + p.localScript).concat(modules.filter(p => !p.cssOnly).map((p) => {
       p.version = WebpackCdnPlugin.getVersion(p.name);
       p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
 
@@ -85,7 +85,7 @@ class WebpackCdnPlugin {
 
         return p[p1];
       });
-    });
+    }));
   }
 }
 
