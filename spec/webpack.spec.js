@@ -86,7 +86,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/local.css`,
+          `/assets/local.css`,
           `//unpkg.com/nyc@${versions.nyc}/style.css`,
           `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
         ]);
@@ -94,7 +94,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/local.js`,
+          `/assets/local.js`,
           `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
           `//unpkg.com/nyc@${versions.nyc}/index.js`,
           `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
@@ -110,7 +110,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/local.css`,
+          `/assets/local.css`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/style.css`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/style.css`,
         ]);
@@ -118,7 +118,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/local.js`,
+          `/assets/local.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${versions.jasmineSpecReporter}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
@@ -184,7 +184,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/node_modules/local.css`,
+          `/assets/local.css`,
           '/node_modules/nyc/style.css',
           '/node_modules/jasmine/style.css',
         ]);
@@ -192,7 +192,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/node_modules/local.js`,
+          `/assets/local.js`,
           '/node_modules/jasmine-spec-reporter/index.js',
           '/node_modules/nyc/index.js',
           '/node_modules/jasmine/lib/jasmine.js',

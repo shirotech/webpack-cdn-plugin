@@ -21,7 +21,7 @@ class WebpackCdnPlugin {
     const { output } = compiler.options;
     output.publicPath = output.publicPath || '/';
 
-    if (!this.prod && output.publicPath.slice(-1) !== slash) {
+    if (output.publicPath.slice(-1) !== slash) {
       output.publicPath += slash;
     }
 
@@ -31,7 +31,7 @@ class WebpackCdnPlugin {
       this.prefix += slash;
     }
 
-    const getArgs = [this.modules, this.url, this.prefix, this.prod];
+    const getArgs = [this.modules, this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
@@ -53,11 +53,11 @@ class WebpackCdnPlugin {
     return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
   }
 
-  static _getCss(modules, url, prefix, prod) {
+  static _getCss(modules, url, prefix, prod, publicPath) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localStyle).map((p) => (prefix || '/') + p.localStyle).concat(modules.filter(p => p.style).map((p) => {
+    return modules.filter(p => p.localStyle).map((p) => publicPath + p.localStyle).concat(modules.filter(p => p.style).map((p) => {
       p.version = WebpackCdnPlugin.getVersion(p.name);
 
       return prefix + url.replace(paramsRegex, (m, p1) => {
@@ -70,11 +70,11 @@ class WebpackCdnPlugin {
     }));
   }
 
-  static _getJs(modules, url, prefix, prod) {
+  static _getJs(modules, url, prefix, prod, publicPath) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localScript).map((p) => (prefix || '/') + p.localScript).concat(modules.filter(p => !p.cssOnly).map((p) => {
+    return modules.filter(p => p.localScript).map((p) => publicPath + p.localScript).concat(modules.filter(p => !p.cssOnly).map((p) => {
       p.version = WebpackCdnPlugin.getVersion(p.name);
       p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
 
