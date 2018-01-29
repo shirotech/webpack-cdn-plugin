@@ -18,7 +18,7 @@ const versions = {
   jasmineSpecReporter: WebpackCdnPlugin.getVersion('jasmine-spec-reporter'),
   nyc: WebpackCdnPlugin.getVersion('nyc'),
   jasmineCore: WebpackCdnPlugin.getVersion('jasmine-core'),
-  nopt: WebpackCdnPlugin.getVersion('nopt'),
+  archy: WebpackCdnPlugin.getVersion('archy'),
 };
 
 const fs = new webpack.MemoryOutputFileSystem();
@@ -101,7 +101,7 @@ function getConfig({
           localStyle: 'local.css',
           localScript: 'local.js',
         },
-        { name: 'nopt', cdn: 'nopt', style: 'style.css' },
+        { name: 'archy', cdn: 'archy', style: 'style.css' },
       ],
     };
   }
@@ -204,7 +204,7 @@ describe('Webpack Integration', () => {
         expect(cssAssets2).toEqual([
           '/assets/local.css',
           `//unpkg.com/nyc@${versions.nyc}/style.css`,
-          `//unpkg.com/nopt@${versions.nopt}/style.css`,
+          `//unpkg.com/archy@${versions.archy}/style.css`,
         ]);
       });
 
@@ -220,7 +220,7 @@ describe('Webpack Integration', () => {
           '/assets/local.js',
           `//unpkg.com/jasmine-core@${versions.jasmineCore}/index.js`,
           `//unpkg.com/nyc@${versions.nyc}/index.js`,
-          `//unpkg.com/nopt@${versions.nopt}/lib/nopt.js`,
+          `//unpkg.com/archy@${versions.archy}/index.js`,
           '/assets/app.js',
         ]);
       });
@@ -305,7 +305,7 @@ describe('Webpack Integration', () => {
       });
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
-        expect(cssAssets2).toEqual(['/local.css', '/nyc/style.css', '/nopt/style.css']);
+        expect(cssAssets2).toEqual(['/local.css', '/nyc/style.css', '/archy/style.css']);
       });
 
       it('should output the right assets (js)', () => {
@@ -320,7 +320,7 @@ describe('Webpack Integration', () => {
           '/local.js',
           '/jasmine-core/index.js',
           '/nyc/index.js',
-          '/nopt/lib/nopt.js',
+          '/archy/index.js',
           '/app.js',
         ]);
       });
