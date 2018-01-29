@@ -8,6 +8,8 @@ const jsMatcher = /<script type="text\/javascript" src="(.+?)">/g;
 
 let cssAssets;
 let jsAssets;
+let jsAssets2;
+let cssAssets2;
 
 WebpackCdnPlugin.node_modules = path.join(__dirname, '../node_modules');
 
@@ -15,6 +17,8 @@ const versions = {
   jasmine: WebpackCdnPlugin.getVersion('jasmine'),
   jasmineSpecReporter: WebpackCdnPlugin.getVersion('jasmine-spec-reporter'),
   nyc: WebpackCdnPlugin.getVersion('nyc'),
+  jasmineCore: WebpackCdnPlugin.getVersion('jasmine-core'),
+  nopt: WebpackCdnPlugin.getVersion('nopt'),
 };
 
 const fs = new webpack.MemoryOutputFileSystem();
@@ -22,27 +26,42 @@ const fs = new webpack.MemoryOutputFileSystem();
 function runWebpack(callback, config) {
   cssAssets = [];
   jsAssets = [];
+  cssAssets2 = [];
+  jsAssets2 = [];
 
   const compiler = webpack(config);
   compiler.outputFileSystem = fs;
 
   compiler.run((err, stats) => {
     const html = stats.compilation.assets['../index.html'].source();
+    const html2 = stats.compilation.assets['../index2.html'].source();
 
     let matches;
-    while (matches = cssMatcher.exec(html)) {
+    while ((matches = cssMatcher.exec(html))) {
       cssAssets.push(matches[1]);
     }
+    while ((matches = cssMatcher.exec(html2))) {
+      cssAssets2.push(matches[1]);
+    }
 
-    while (matches = jsMatcher.exec(html)) {
+    while ((matches = jsMatcher.exec(html))) {
       jsAssets.push(matches[1]);
+    }
+    while ((matches = jsMatcher.exec(html2))) {
+      jsAssets2.push(matches[1]);
     }
 
     callback();
   });
 }
 
-function getConfig({ prod, publicPath = '/node_modules', publicPath2 = '/assets', prodUrl }) {
+function getConfig({
+  prod,
+  publicPath = '/node_modules',
+  publicPath2 = '/assets',
+  prodUrl,
+  mutiple,
+}) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
     filename: 'app.js',
@@ -52,12 +71,43 @@ function getConfig({ prod, publicPath = '/node_modules', publicPath2 = '/assets'
     output.publicPath = publicPath2;
   }
 
+  let modules = [
+    { name: 'jasmine-spec-reporter', path: 'index.js' },
+    {
+      name: 'nyc',
+      style: 'style.css',
+      localStyle: 'local.css',
+      localScript: 'local.js',
+    },
+    { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
+  ];
+  if (mutiple) {
+    modules = {
+      module1: [
+        { name: 'jasmine-spec-reporter', path: 'index.js' },
+        {
+          name: 'nyc',
+          style: 'style.css',
+          localStyle: 'local.css',
+          localScript: 'local.js',
+        },
+        { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
+      ],
+      module2: [
+        { name: 'jasmine-core', path: 'index.js' },
+        {
+          name: 'nyc',
+          style: 'style.css',
+          localStyle: 'local.css',
+          localScript: 'local.js',
+        },
+        { name: 'nopt', cdn: 'nopt', style: 'style.css' },
+      ],
+    };
+  }
+
   const options = {
-    modules: [
-      { name: 'jasmine-spec-reporter', path: 'index.js' },
-      { name: 'nyc', style: 'style.css', localStyle: 'local.css', localScript: 'local.js' },
-      { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
-    ],
+    modules,
     prod,
     prodUrl,
   };
@@ -71,11 +121,12 @@ function getConfig({ prod, publicPath = '/node_modules', publicPath2 = '/assets'
     output,
     plugins: [
       new HtmlWebpackPlugin({ filename: '../index.html' }),
+      new HtmlWebpackPlugin({ filename: '../index2.html', cdnModule: 'module2' }),
+      new HtmlWebpackPlugin({ filename: '../index3.html', cdnModule: false }),
       new WebpackCdnPlugin(options),
     ],
   };
 }
-
 
 describe('Webpack Integration', () => {
   describe('When `prod` is true', () => {
@@ -86,7 +137,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/assets/local.css`,
+          '/assets/local.css',
           `//unpkg.com/nyc@${versions.nyc}/style.css`,
           `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
         ]);
@@ -94,7 +145,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/assets/local.js`,
+          '/assets/local.js',
           `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
           `//unpkg.com/nyc@${versions.nyc}/index.js`,
           `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
@@ -105,12 +156,18 @@ describe('Webpack Integration', () => {
 
     describe('When `prodUrl` is set', () => {
       beforeAll((done) => {
-        runWebpack(done, getConfig({ prod: true, prodUrl: '//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path' }));
+        runWebpack(
+          done,
+          getConfig({
+            prod: true,
+            prodUrl: '//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path',
+          }),
+        );
       });
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/assets/local.css`,
+          '/assets/local.css',
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/style.css`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/style.css`,
         ]);
@@ -118,10 +175,52 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/assets/local.js`,
-          `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${versions.jasmineSpecReporter}/index.js`,
+          '/assets/local.js',
+          `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${
+            versions.jasmineSpecReporter
+          }/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
+          '/assets/app.js',
+        ]);
+      });
+    });
+    describe('When set `mutiple` modules', () => {
+      beforeAll((done) => {
+        runWebpack(
+          done,
+          getConfig({
+            prod: true,
+            mutiple: true,
+          }),
+        );
+      });
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual([
+          '/assets/local.css',
+          `//unpkg.com/nyc@${versions.nyc}/style.css`,
+          `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
+        ]);
+        expect(cssAssets2).toEqual([
+          '/assets/local.css',
+          `//unpkg.com/nyc@${versions.nyc}/style.css`,
+          `//unpkg.com/nopt@${versions.nopt}/style.css`,
+        ]);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          '/assets/local.js',
+          `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
+          `//unpkg.com/nyc@${versions.nyc}/index.js`,
+          `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
+          '/assets/app.js',
+        ]);
+        expect(jsAssets2).toEqual([
+          '/assets/local.js',
+          `//unpkg.com/jasmine-core@${versions.jasmineCore}/index.js`,
+          `//unpkg.com/nyc@${versions.nyc}/index.js`,
+          `//unpkg.com/nopt@${versions.nopt}/lib/nopt.js`,
           '/assets/app.js',
         ]);
       });
@@ -135,16 +234,12 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssAssets).toEqual([
-          `/local.css`,
-          '/nyc/style.css',
-          '/jasmine/style.css',
-        ]);
+        expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/local.js`,
+          '/local.js',
           '/jasmine-spec-reporter/index.js',
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js',
@@ -159,16 +254,12 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssAssets).toEqual([
-          `/local.css`,
-          '/nyc/style.css',
-          '/jasmine/style.css',
-        ]);
+        expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/local.js`,
+          '/local.js',
           '/jasmine-spec-reporter/index.js',
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js',
@@ -184,7 +275,7 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-          `/assets/local.css`,
+          '/assets/local.css',
           '/node_modules/nyc/style.css',
           '/node_modules/jasmine/style.css',
         ]);
@@ -192,11 +283,45 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          `/assets/local.js`,
+          '/assets/local.js',
           '/node_modules/jasmine-spec-reporter/index.js',
           '/node_modules/nyc/index.js',
           '/node_modules/jasmine/lib/jasmine.js',
           '/assets/app.js',
+        ]);
+      });
+    });
+    describe('When set `mutiple` modules', () => {
+      beforeAll((done) => {
+        runWebpack(
+          done,
+          getConfig({
+            prod: false,
+            publicPath: null,
+            publicPath2: null,
+            mutiple: true,
+          }),
+        );
+      });
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
+        expect(cssAssets2).toEqual(['/local.css', '/nyc/style.css', '/nopt/style.css']);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          '/local.js',
+          '/jasmine-spec-reporter/index.js',
+          '/nyc/index.js',
+          '/jasmine/lib/jasmine.js',
+          '/app.js',
+        ]);
+        expect(jsAssets2).toEqual([
+          '/local.js',
+          '/jasmine-core/index.js',
+          '/nyc/index.js',
+          '/nopt/lib/nopt.js',
+          '/app.js',
         ]);
       });
     });

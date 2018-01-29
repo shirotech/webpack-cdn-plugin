@@ -39,8 +39,10 @@ class WebpackCdnPlugin {
         const moduleId = data.plugin.options.cdnModule;
         if (moduleId !== false) {
           const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
-          data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
-          data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
+          if (modules) {
+            data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
+            data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
+          }
         }
         callback(null, data);
       });
@@ -50,9 +52,9 @@ class WebpackCdnPlugin {
     Reflect.ownKeys(this.modules).forEach((key) => {
       const mods = this.modules[key];
       mods.forEach((p) => {
-        if (externals[p.name]) {
-          console.warn(`The key '${p.name}' of module ${key === DEFAULT_MODULE_KEY ? '' : `'${key}'`} already exists `); // eslint-disable-line
-        }
+        // if (externals[p.name]) {
+        //   console.warn(`The key '${p.name}' of module ${key === DEFAULT_MODULE_KEY ? '' : `'${key}'`} already exists `); // eslint-disable-line
+        // }
         externals[p.name] = p.var || p.name;
       });
     });
