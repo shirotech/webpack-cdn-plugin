@@ -4,6 +4,7 @@ const empty = '';
 const slash = '/';
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
+const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 
 class WebpackCdnPlugin {
   constructor({
@@ -11,7 +12,7 @@ class WebpackCdnPlugin {
     prodUrl = '//unpkg.com/:name@:version/:path',
     devUrl = ':name/:path', publicPath,
   }) {
-    this.modules = modules;
+    this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
     this.prefix = publicPath;
     this.url = this.prod ? prodUrl : devUrl;
@@ -31,19 +32,29 @@ class WebpackCdnPlugin {
       this.prefix += slash;
     }
 
-    const getArgs = [this.modules, this.url, this.prefix, this.prod, output.publicPath];
+    const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
-        data.assets.js = WebpackCdnPlugin._getJs(...getArgs).concat(data.assets.js);
-        data.assets.css = WebpackCdnPlugin._getCss(...getArgs).concat(data.assets.css);
+        const moduleId = data.plugin.options.cdnModule;
+        if (moduleId !== false) {
+          const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
+          data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
+          data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
+        }
         callback(null, data);
       });
     });
-
     const externals = compiler.options.externals || {};
-    this.modules.forEach((p) => {
-      externals[p.name] = p.var || p.name;
+
+    Reflect.ownKeys(this.modules).forEach((key) => {
+      const mods = this.modules[key];
+      mods.forEach((p) => {
+        if (externals[p.name]) {
+          console.warn(`The key '${p.name}' of module ${key === DEFAULT_MODULE_KEY ? '' : `'${key}'`} already exists `); // eslint-disable-line
+        }
+        externals[p.name] = p.var || p.name;
+      });
     });
 
     compiler.options.externals = externals;
