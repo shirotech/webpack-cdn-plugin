@@ -52,9 +52,6 @@ class WebpackCdnPlugin {
     Reflect.ownKeys(this.modules).forEach((key) => {
       const mods = this.modules[key];
       mods.forEach((p) => {
-        // if (externals[p.name]) {
-        //   console.warn(`The key '${p.name}' of module ${key === DEFAULT_MODULE_KEY ? '' : `'${key}'`} already exists `); // eslint-disable-line
-        // }
         externals[p.name] = p.var || p.name;
       });
     });
@@ -70,35 +67,41 @@ class WebpackCdnPlugin {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localStyle).map((p) => publicPath + p.localStyle).concat(modules.filter(p => p.style).map((p) => {
-      p.version = WebpackCdnPlugin.getVersion(p.name);
+    return modules
+      .filter(p => p.localStyle)
+      .map(p => publicPath + p.localStyle)
+      .concat(modules.filter(p => p.style).map((p) => {
+        p.version = WebpackCdnPlugin.getVersion(p.name);
 
-      return prefix + url.replace(paramsRegex, (m, p1) => {
-        if (prod && p.cdn && p1 === 'name') {
-          return p.cdn;
-        }
+        return prefix + url.replace(paramsRegex, (m, p1) => {
+          if (prod && p.cdn && p1 === 'name') {
+            return p.cdn;
+          }
 
-        return p[p1 === 'path' ? 'style' : p1];
-      });
-    }));
+          return p[p1 === 'path' ? 'style' : p1];
+        });
+      }));
   }
 
   static _getJs(modules, url, prefix, prod, publicPath) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localScript).map((p) => publicPath + p.localScript).concat(modules.filter(p => !p.cssOnly).map((p) => {
-      p.version = WebpackCdnPlugin.getVersion(p.name);
-      p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
+    return modules
+      .filter(p => p.localScript)
+      .map(p => publicPath + p.localScript)
+      .concat(modules.filter(p => !p.cssOnly).map((p) => {
+        p.version = WebpackCdnPlugin.getVersion(p.name);
+        p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
 
-      return prefix + url.replace(paramsRegex, (m, p1) => {
-        if (prod && p.cdn && p1 === 'name') {
-          return p.cdn;
-        }
+        return prefix + url.replace(paramsRegex, (m, p1) => {
+          if (prod && p.cdn && p1 === 'name') {
+            return p.cdn;
+          }
 
-        return p[p1];
-      });
-    }));
+          return p[p1];
+        });
+      }));
   }
 }
 
