@@ -4,6 +4,7 @@ const empty = '';
 const slash = '/';
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
+const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 
 class WebpackCdnPlugin {
   constructor({
@@ -11,7 +12,7 @@ class WebpackCdnPlugin {
     prodUrl = '//unpkg.com/:name@:version/:path',
     devUrl = ':name/:path', publicPath,
   }) {
-    this.modules = modules;
+    this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
     this.prefix = publicPath;
     this.url = this.prod ? prodUrl : devUrl;
@@ -31,19 +32,28 @@ class WebpackCdnPlugin {
       this.prefix += slash;
     }
 
-    const getArgs = [this.modules, this.url, this.prefix, this.prod, output.publicPath];
+    const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
-        data.assets.js = WebpackCdnPlugin._getJs(...getArgs).concat(data.assets.js);
-        data.assets.css = WebpackCdnPlugin._getCss(...getArgs).concat(data.assets.css);
+        const moduleId = data.plugin.options.cdnModule;
+        if (moduleId !== false) {
+          const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
+          if (modules) {
+            data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
+            data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
+          }
+        }
         callback(null, data);
       });
     });
-
     const externals = compiler.options.externals || {};
-    this.modules.forEach((p) => {
-      externals[p.name] = p.var || p.name;
+
+    Reflect.ownKeys(this.modules).forEach((key) => {
+      const mods = this.modules[key];
+      mods.forEach((p) => {
+        externals[p.name] = p.var || p.name;
+      });
     });
 
     compiler.options.externals = externals;
@@ -57,35 +67,41 @@ class WebpackCdnPlugin {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localStyle).map((p) => publicPath + p.localStyle).concat(modules.filter(p => p.style).map((p) => {
-      p.version = WebpackCdnPlugin.getVersion(p.name);
+    return modules
+      .filter(p => p.localStyle)
+      .map(p => publicPath + p.localStyle)
+      .concat(modules.filter(p => p.style).map((p) => {
+        p.version = WebpackCdnPlugin.getVersion(p.name);
 
-      return prefix + url.replace(paramsRegex, (m, p1) => {
-        if (prod && p.cdn && p1 === 'name') {
-          return p.cdn;
-        }
+        return prefix + url.replace(paramsRegex, (m, p1) => {
+          if (prod && p.cdn && p1 === 'name') {
+            return p.cdn;
+          }
 
-        return p[p1 === 'path' ? 'style' : p1];
-      });
-    }));
+          return p[p1 === 'path' ? 'style' : p1];
+        });
+      }));
   }
 
   static _getJs(modules, url, prefix, prod, publicPath) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules.filter(p => p.localScript).map((p) => publicPath + p.localScript).concat(modules.filter(p => !p.cssOnly).map((p) => {
-      p.version = WebpackCdnPlugin.getVersion(p.name);
-      p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
+    return modules
+      .filter(p => p.localScript)
+      .map(p => publicPath + p.localScript)
+      .concat(modules.filter(p => !p.cssOnly).map((p) => {
+        p.version = WebpackCdnPlugin.getVersion(p.name);
+        p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
 
-      return prefix + url.replace(paramsRegex, (m, p1) => {
-        if (prod && p.cdn && p1 === 'name') {
-          return p.cdn;
-        }
+        return prefix + url.replace(paramsRegex, (m, p1) => {
+          if (prod && p.cdn && p1 === 'name') {
+            return p.cdn;
+          }
 
-        return p[p1];
-      });
-    }));
+          return p[p1];
+        });
+      }));
   }
 }
 
