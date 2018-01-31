@@ -101,10 +101,10 @@ Please see the [example](example) folder for a basic working example.
 
 You can pass an object options to WebpackCdnPlugin. Allowed values are as follows:
 
-##### `modules`:`array` or `object`(for mutiple pages)
+##### `modules`:`array` or `object`(for multiple pages)
 
 The available options for each module, which is part of an array.
-If you want inject cdn for mutiple pages, you can config like this:
+If you want inject cdn for multiple pages, you can config like this:
 
 ```js
 plugins:[
