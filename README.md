@@ -101,9 +101,49 @@ Please see the [example](example) folder for a basic working example.
 
 You can pass an object options to WebpackCdnPlugin. Allowed values are as follows:
 
-##### `modules`:`array`
+##### `modules`:`array` or `object`(for mutiple pages)
 
 The available options for each module, which is part of an array.
+If you want inject cdn for mutiple pages, you can config like this:
+
+```js
+plugins:[
+// ...otherConfig
+new HtmlWebpackPlugin({
+      title: 'title',
+      cdnModule: 'vue',
+      favicon: 'path/to/favicon',
+      template: 'path/to/template',
+      filename: 'filename',
+      // other config
+ }),
+ new HtmlWebpackPlugin({
+      title: 'title',
+      cdnModule: 'react',
+      favicon: 'path/to/favicon',
+      template: 'path/to/template',
+      filename: 'filename',
+      // other config
+  }),
+ new WebpackCdnPlugin({
+   modules: {
+      'vue': [
+        { name: 'vue', var: 'Vue', path: 'dist/vue.min.js' },
+      ],
+      'react': [
+        { name: 'react', var: 'React', path: `umd/react.${process.env.NODE_ENV}.min.js` },
+        { name: 'react-dom', var: 'ReactDOM', path: `umd/react-dom.${process.env.NODE_ENV}.min.js` },
+      ]
+    }
+ })
+]
+```
+
+The extra `html-webpack-plugin` option `cdnModule` corresponds to the configuration __key__ that you config inside the `webpack-cdn-plugin` modules
+- If you do not give `cdnModule` this value, the default is to take the first one
+- If you set `cdnModule = false`, it will not inject cdn
+
+More detail to see [#13](https://github.com/van-nguyen/webpack-cdn-plugin/pull/13)
 
 `name`:`string`
 
