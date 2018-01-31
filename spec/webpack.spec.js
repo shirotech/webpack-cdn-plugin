@@ -60,7 +60,7 @@ function getConfig({
   publicPath = '/node_modules',
   publicPath2 = '/assets',
   prodUrl,
-  mutiple,
+  multiple,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -81,7 +81,7 @@ function getConfig({
     },
     { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
   ];
-  if (mutiple) {
+  if (multiple) {
     modules = {
       module1: [
         { name: 'jasmine-spec-reporter', path: 'index.js' },
@@ -185,13 +185,13 @@ describe('Webpack Integration', () => {
         ]);
       });
     });
-    describe('When set `mutiple` modules', () => {
+    describe('When set `multiple` modules', () => {
       beforeAll((done) => {
         runWebpack(
           done,
           getConfig({
             prod: true,
-            mutiple: true,
+            multiple: true,
           }),
         );
       });
@@ -291,7 +291,7 @@ describe('Webpack Integration', () => {
         ]);
       });
     });
-    describe('When set `mutiple` modules', () => {
+    describe('When set `multiple` modules', () => {
       beforeAll((done) => {
         runWebpack(
           done,
@@ -299,7 +299,7 @@ describe('Webpack Integration', () => {
             prod: false,
             publicPath: null,
             publicPath2: null,
-            mutiple: true,
+            multiple: true,
           }),
         );
       });
