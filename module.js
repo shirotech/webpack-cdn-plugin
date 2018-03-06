@@ -34,8 +34,8 @@ class WebpackCdnPlugin {
 
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
-    compiler.plugin('compilation', (compilation) => {
-      compilation.plugin('html-webpack-plugin-before-html-generation', (data, callback) => {
+    compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
+      compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync('WebpackCdnPlugin', (data, callback) => {
         const moduleId = data.plugin.options.cdnModule;
         if (moduleId !== false) {
           const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
