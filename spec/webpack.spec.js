@@ -117,6 +117,7 @@ function getConfig({
   }
 
   return {
+    mode: 'development',
     entry: path.join(__dirname, '../example/app.js'),
     output,
     plugins: [
