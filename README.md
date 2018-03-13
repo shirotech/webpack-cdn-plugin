@@ -221,3 +221,4 @@ Many thanks to the following contributors:
 - [QingWei-Li](https://github.com/QingWei-Li)
 - [jikkai](https://github.com/jikkai)
 - [likun7981](https://github.com/likun7981)
+- [kagawagao](https://github.com/kagawagao)
