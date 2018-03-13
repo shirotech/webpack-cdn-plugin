@@ -54,16 +54,16 @@
   "devDependencies": {
     "archy": "^1.0.0",
     "babel-register": "^6.26.0",
-    "eslint": "^4.16.0",
+    "eslint": "^4.18.2",
     "eslint-config-airbnb-base": "12.1.0",
-    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-import": "^2.9.0",
     "html-webpack-plugin": "^3.0.6",
     "husky": "^0.14.3",
-    "jasmine": "^2.9.0",
+    "jasmine": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",
-    "nyc": "^11.4.1",
+    "nyc": "^11.6.0",
     "validate-commit-msg": "^2.14.0",
-    "webpack": "^4.1.0"
+    "webpack": "^4.1.1"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
