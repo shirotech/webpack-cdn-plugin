@@ -14,7 +14,7 @@ module.exports = {
     new HtmlWebpackPlugin({ filename: '../index.html' }), // output file relative to output.path
     new WebpackCdnPlugin({
       modules: [
-        { name: 'istanbul' },
+        { name: 'archy' },
         { name: 'jasmine' },
       ],
       prod: process.env.NODE_ENV === 'production',

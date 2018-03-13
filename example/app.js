@@ -1,2 +1,2 @@
-require('istanbul');
+require('archy');
 require('jasmine');
