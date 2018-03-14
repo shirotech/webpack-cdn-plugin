@@ -1,3 +1,5 @@
+*Note:* This only works on Webpack 4, if you're still on Webpack 3 or below please use version 1.x
+
 ## CDN extension for the HTML Webpack Plugin
 
 [![Build Status](https://travis-ci.org/van-nguyen/webpack-cdn-plugin.svg?branch=master)](https://travis-ci.org/van-nguyen/webpack-cdn-plugin)
