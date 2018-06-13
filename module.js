@@ -20,19 +20,20 @@ class WebpackCdnPlugin {
 
   apply(compiler) {
     const { output } = compiler.options;
-    output.publicPath = output.publicPath || '/';
 
-    if (output.publicPath.slice(-1) !== slash) {
-      output.publicPath += slash;
+    let outputPublicPath = output.publicPath || empty;
+
+    if (outputPublicPath.length > 0 && outputPublicPath.slice(-1) !== slash) {
+      outputPublicPath += slash;
     }
 
-    this.prefix = this.prod ? empty : this.prefix || output.publicPath;
+    this.prefix = this.prod ? empty : this.prefix || outputPublicPath;
 
-    if (!this.prod && this.prefix.slice(-1) !== slash) {
+    if (!this.prod && this.prefix.length > 0 && this.prefix.slice(-1) !== slash) {
       this.prefix += slash;
     }
 
-    const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
+    const getArgs = [this.url, this.prefix, this.prod, outputPublicPath];
 
     compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
       compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync('WebpackCdnPlugin', (data, callback) => {
