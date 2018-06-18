@@ -40,6 +40,7 @@ class WebpackCdnPlugin {
         if (moduleId !== false) {
           const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
           if (modules) {
+            WebpackCdnPlugin._cleanModules(modules);
             data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
             data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
           }
@@ -59,49 +60,83 @@ class WebpackCdnPlugin {
     compiler.options.externals = externals;
   }
 
+  /**
+   * Returns the version of a package
+   */
   static getVersion(name) {
     return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
   }
 
-  static _getCss(modules, url, prefix, prod, publicPath) {
-    prefix = prefix || empty;
-    prod = prod !== false;
+  /**
+   * - populate the "version" property of each module
+   * - construct the "paths" and "styles" arrays
+   * - add a default path if none provided
+   */
+  static _cleanModules(modules) {
+    modules.forEach(p => {
+      p.version = WebpackCdnPlugin.getVersion(p.name);
 
-    return modules
-      .filter(p => p.localStyle)
-      .map(p => publicPath + p.localStyle)
-      .concat(modules.filter(p => p.style).map((p) => {
-        p.version = WebpackCdnPlugin.getVersion(p.name);
+      if (!p.paths) {
+        p.paths = [];
+      }
+      if (p.path) {
+        p.paths.unshift(p.path);
+      }
+      if (p.paths.length === 0 && !p.cssOnly) {
+        p.paths.push(require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/'));
+      }
 
-        return prefix + url.replace(paramsRegex, (m, p1) => {
-          if (prod && p.cdn && p1 === 'name') {
-            return p.cdn;
-          }
-
-          return p[p1 === 'path' ? 'style' : p1];
-        });
-      }));
+      if (!p.styles) {
+        p.styles = [];
+      }
+      if (p.style) {
+        p.styles.unshift(p.style);
+      }
+    });
   }
 
+  /**
+   * Returns the list of CSS files for all modules
+   * It is the concatenation of "localStyle" and all "styles"
+   */
+  static _getCss(modules, url, prefix, prod, publicPath) {
+    return WebpackCdnPlugin._get(modules, url, prefix, prod, publicPath, 'styles', 'localStyle');
+  }
+
+  /**
+   * Returns the list of JS files for all modules
+   * It is the concatenation of "localScript" and all "paths"
+   */
   static _getJs(modules, url, prefix, prod, publicPath) {
+    return WebpackCdnPlugin._get(modules, url, prefix, prod, publicPath, 'paths', 'localScript');
+  }
+
+  /**
+   * Generic method to construct the list of files
+   */
+  static _get(modules, url, prefix, prod, publicPath, pathsKey, localKey) {
     prefix = prefix || empty;
     prod = prod !== false;
 
-    return modules
-      .filter(p => p.localScript)
-      .map(p => publicPath + p.localScript)
-      .concat(modules.filter(p => !p.cssOnly).map((p) => {
-        p.version = WebpackCdnPlugin.getVersion(p.name);
-        p.path = p.path || require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/');
+    let files = [];
 
-        return prefix + url.replace(paramsRegex, (m, p1) => {
-          if (prod && p.cdn && p1 === 'name') {
-            return p.cdn;
-          }
+    modules.filter(p => p[localKey])
+      .forEach(p => files.push(publicPath + p[localKey]));
 
-          return p[p1];
-        });
-      }));
+    modules.filter(p => p[pathsKey].length > 0)
+      .forEach(p => {
+        p[pathsKey].forEach(s => files.push(
+          prefix + url.replace(paramsRegex, (m, p1) => {
+            if (prod && p.cdn && p1 === 'name') {
+              return p.cdn;
+            }
+
+            return p1 === 'path' ? s : p[p1];
+          })
+        ))
+      });
+
+    return files;
   }
 }
 

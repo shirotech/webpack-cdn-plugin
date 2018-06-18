@@ -163,9 +163,17 @@ A variable that will be assigned to the module in global scope, webpack requires
 
 You can specify a path to the main file that will be used, this is useful when you want the minified version for example if main does not point to it.
 
+`paths`:`string[]` (optional)
+
+You can alternatively specify multiple paths which will be loaded from the CDN.
+
 `style`:`string` (optional)
 
 If the module comes with style sheets, you can also specify it as a path.
+
+`styles`:`string[]` (optional)
+
+You can alternatively specify multiple style sheets which will be loaded from the CDN.
 
 `cssOnly`:`boolean` | `false`
 
