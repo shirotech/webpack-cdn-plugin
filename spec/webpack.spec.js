@@ -235,16 +235,16 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
+        expect(cssAssets).toEqual(['local.css', 'nyc/style.css', 'jasmine/style.css']);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '/local.js',
-          '/jasmine-spec-reporter/index.js',
-          '/nyc/index.js',
-          '/jasmine/lib/jasmine.js',
-          '/app.js',
+          'local.js',
+          'jasmine-spec-reporter/index.js',
+          'nyc/index.js',
+          'jasmine/lib/jasmine.js',
+          'assets/app.js',
         ]);
       });
     });
@@ -305,24 +305,24 @@ describe('Webpack Integration', () => {
         );
       });
       it('should output the right assets (css)', () => {
-        expect(cssAssets).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
-        expect(cssAssets2).toEqual(['/local.css', '/nyc/style.css', '/archy/style.css']);
+        expect(cssAssets).toEqual(['local.css', 'nyc/style.css', 'jasmine/style.css']);
+        expect(cssAssets2).toEqual(['local.css', 'nyc/style.css', 'archy/style.css']);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-          '/local.js',
-          '/jasmine-spec-reporter/index.js',
-          '/nyc/index.js',
-          '/jasmine/lib/jasmine.js',
-          '/app.js',
+          'local.js',
+          'jasmine-spec-reporter/index.js',
+          'nyc/index.js',
+          'jasmine/lib/jasmine.js',
+          'assets/app.js',
         ]);
         expect(jsAssets2).toEqual([
-          '/local.js',
-          '/jasmine-core/index.js',
-          '/nyc/index.js',
-          '/archy/index.js',
-          '/app.js',
+          'local.js',
+          'jasmine-core/index.js',
+          'nyc/index.js',
+          'archy/index.js',
+          'assets/app.js',
         ]);
       });
     });
