@@ -81,6 +81,7 @@ class WebpackCdnPlugin {
       }
       if (p.path) {
         p.paths.unshift(p.path);
+        p.path = undefined;
       }
       if (p.paths.length === 0 && !p.cssOnly) {
         p.paths.push(require.resolve(p.name).match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1].replace(/\\/g, '/'));
@@ -91,6 +92,7 @@ class WebpackCdnPlugin {
       }
       if (p.style) {
         p.styles.unshift(p.style);
+        p.style = undefined;
       }
     });
   }
