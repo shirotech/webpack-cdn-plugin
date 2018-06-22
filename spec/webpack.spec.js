@@ -139,17 +139,17 @@ describe('Webpack Integration', () => {
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
           '/assets/local.css',
-          `//unpkg.com/nyc@${versions.nyc}/style.css`,
-          `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
+          `https://unpkg.com/nyc@${versions.nyc}/style.css`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/style.css`,
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
           '/assets/local.js',
-          `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
-          `//unpkg.com/nyc@${versions.nyc}/index.js`,
-          `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
+          `https://unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
+          `https://unpkg.com/nyc@${versions.nyc}/index.js`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
         ]);
       });
@@ -199,29 +199,29 @@ describe('Webpack Integration', () => {
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
           '/assets/local.css',
-          `//unpkg.com/nyc@${versions.nyc}/style.css`,
-          `//unpkg.com/jasmine2@${versions.jasmine}/style.css`,
+          `https://unpkg.com/nyc@${versions.nyc}/style.css`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/style.css`,
         ]);
         expect(cssAssets2).toEqual([
           '/assets/local.css',
-          `//unpkg.com/nyc@${versions.nyc}/style.css`,
-          `//unpkg.com/archy@${versions.archy}/style.css`,
+          `https://unpkg.com/nyc@${versions.nyc}/style.css`,
+          `https://unpkg.com/archy@${versions.archy}/style.css`,
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
           '/assets/local.js',
-          `//unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
-          `//unpkg.com/nyc@${versions.nyc}/index.js`,
-          `//unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
+          `https://unpkg.com/jasmine-spec-reporter@${versions.jasmineSpecReporter}/index.js`,
+          `https://unpkg.com/nyc@${versions.nyc}/index.js`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
         ]);
         expect(jsAssets2).toEqual([
           '/assets/local.js',
-          `//unpkg.com/jasmine-core@${versions.jasmineCore}/index.js`,
-          `//unpkg.com/nyc@${versions.nyc}/index.js`,
-          `//unpkg.com/archy@${versions.archy}/index.js`,
+          `https://unpkg.com/jasmine-core@${versions.jasmineCore}/index.js`,
+          `https://unpkg.com/nyc@${versions.nyc}/index.js`,
+          `https://unpkg.com/archy@${versions.archy}/index.js`,
           '/assets/app.js',
         ]);
       });

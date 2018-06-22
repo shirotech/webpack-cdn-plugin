@@ -9,7 +9,7 @@ const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 class WebpackCdnPlugin {
   constructor({
     modules, prod,
-    prodUrl = '//unpkg.com/:name@:version/:path',
+    prodUrl = 'https://unpkg.com/:name@:version/:path',
     devUrl = ':name/:path', publicPath,
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
