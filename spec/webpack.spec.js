@@ -255,19 +255,19 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-            `//unpkg.com/jasmine2@${versions.jasmine}/style1.css`,
-            `//unpkg.com/jasmine2@${versions.jasmine}/style2.css`,
-            `//unpkg.com/archy@${versions.archy}/style1.css`,
-            `//unpkg.com/archy@${versions.archy}/style2.css`,
+            `https://unpkg.com/jasmine2@${versions.jasmine}/style1.css`,
+            `https://unpkg.com/jasmine2@${versions.jasmine}/style2.css`,
+            `https://unpkg.com/archy@${versions.archy}/style1.css`,
+            `https://unpkg.com/archy@${versions.archy}/style2.css`,
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-            `//unpkg.com/jasmine2@${versions.jasmine}/index1.js`,
-            `//unpkg.com/jasmine2@${versions.jasmine}/index2.js`,
-            `//unpkg.com/archy@${versions.archy}/index1.js`,
-            `//unpkg.com/archy@${versions.archy}/index2.js`,
+            `https://unpkg.com/jasmine2@${versions.jasmine}/index1.js`,
+            `https://unpkg.com/jasmine2@${versions.jasmine}/index2.js`,
+            `https://unpkg.com/archy@${versions.archy}/index1.js`,
+            `https://unpkg.com/archy@${versions.archy}/index2.js`,
             '/app.js'
         ]);
       });
