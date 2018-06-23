@@ -232,3 +232,5 @@ Many thanks to the following contributors:
 - [jikkai](https://github.com/jikkai)
 - [likun7981](https://github.com/likun7981)
 - [kagawagao](https://github.com/kagawagao)
+- [mahcloud](https://github.com/mahcloud)
+- [mistic100](https://github.com/mistic100)
