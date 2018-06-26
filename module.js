@@ -8,14 +8,18 @@ const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 
 class WebpackCdnPlugin {
   constructor({
-    modules, prod,
+    modules,
+    prod,
     prodUrl = 'https://unpkg.com/:name@:version/:path',
-    devUrl = ':name/:path', publicPath,
+    devUrl = ':name/:path',
+    publicPath,
+    optimize = false,
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
     this.prefix = publicPath;
     this.url = this.prod ? prodUrl : devUrl;
+    this.optimize = optimize;
   }
 
   apply(compiler) {
@@ -38,8 +42,13 @@ class WebpackCdnPlugin {
       compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync('WebpackCdnPlugin', (data, callback) => {
         const moduleId = data.plugin.options.cdnModule;
         if (moduleId !== false) {
-          const modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
+          let modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
           if (modules) {
+            if (this.optimize) {
+              const usedModules = WebpackCdnPlugin._getUsedModules(compilation);
+              modules = modules.filter(p => usedModules[p.name]);
+            }
+
             WebpackCdnPlugin._cleanModules(modules);
             data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
             data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets.css);
@@ -65,6 +74,23 @@ class WebpackCdnPlugin {
    */
   static getVersion(name) {
     return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
+  }
+
+  /**
+   * Returns the list of all modules in the bundle
+   */
+  static _getUsedModules(compilation) {
+    let usedModules = {};
+
+    compilation.getStats().toJson().chunks.forEach(c => {
+      c.modules.forEach(m => {
+        m.reasons.forEach(r => {
+          usedModules[r.userRequest] = true;
+        });
+      });
+    });
+
+    return usedModules;
   }
 
   /**
