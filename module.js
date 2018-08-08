@@ -73,7 +73,9 @@ class WebpackCdnPlugin {
    * Returns the version of a package
    */
   static getVersion(name) {
-    return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
+    try {
+      return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
+    } catch(e) {}
   }
 
   /**
