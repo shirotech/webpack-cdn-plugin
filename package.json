@@ -6,7 +6,7 @@
   "module": "module.js",
   "scripts": {
     "test": "nyc jasmine",
-    "install": "babel module.js --out-file main.js",
+    "build": "babel module.js --out-file main.js",
     "commitmsg": "validate-commit-msg",
     "precommit": "npm test"
   },
@@ -54,9 +54,9 @@
   "devDependencies": {
     "archy": "^1.0.0",
     "babel-cli": "^6.26.0",
-    "babel-register": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "eslint": "^5.4.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "^2.14.0",
