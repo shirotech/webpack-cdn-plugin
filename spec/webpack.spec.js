@@ -3,8 +3,8 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import WebpackCdnPlugin from '../module';
 
-const cssMatcher = /<link href="(.+?)" rel="stylesheet">/g;
-const jsMatcher = /<script type="text\/javascript" src="(.+?)">/g;
+const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?>/g;
+const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?>/g;
 
 let cssAssets;
 let jsAssets;

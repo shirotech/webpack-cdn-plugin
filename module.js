@@ -67,6 +67,30 @@ class WebpackCdnPlugin {
     });
 
     compiler.options.externals = externals;
+
+    if (this.prod) {
+      compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', compiler => {
+        compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
+          compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', compilation => {
+            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync('WebpackCdnPlugin', this.alterAssetTags.bind(this));
+          });
+        });
+      });
+    }
+  }
+
+  alterAssetTags(pluginArgs, callback) {
+    const prefix = this.url.split('/:')[0];
+    function filterTag(tag) {
+      const url = (tag.tagName === 'script' && tag.attributes.src) || (tag.tagName === 'link' && tag.attributes.href);
+      return url && url.indexOf(prefix) === 0;
+    }
+    function processTag(tag) {
+      tag.attributes.crossorigin = 'anonymous';
+    }
+    pluginArgs.head.filter(filterTag).forEach(processTag);
+    pluginArgs.body.filter(filterTag).forEach(processTag);
+    callback(null, pluginArgs);
   }
 
   /**
