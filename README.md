@@ -202,6 +202,10 @@ Similar to `prodUrl`, this option overrides the default template url for when `p
 
 Prefixes the assets with this string, if none is provided it will fallback to the one set globally in `webpack.options.output.publicPath`, note that this is always empty when prod is `true` so that it makes use of the CDN location because it is a remote resource.
 
+##### `crossOrigin`:`string` (optional)
+
+Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information.
+
 ### Contribution
 
 This is a pretty simple plugin and caters mostly for my needs. However, I have made it as flexible and customizable as possible.

@@ -8,8 +8,12 @@ const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="ano
 
 let cssAssets;
 let jsAssets;
-let jsAssets2;
 let cssAssets2;
+let jsAssets2;
+let cssCrossOrigin;
+let jsCrossOrigin;
+let cssCrossOrigin2;
+let jsCrossOrigin2;
 
 WebpackCdnPlugin.node_modules = path.join(__dirname, '../node_modules');
 
@@ -28,6 +32,10 @@ function runWebpack(callback, config) {
   jsAssets = [];
   cssAssets2 = [];
   jsAssets2 = [];
+  cssCrossOrigin = [];
+  jsCrossOrigin = [];
+  cssCrossOrigin2 = [];
+  jsCrossOrigin2 = [];
 
   const compiler = webpack(config);
   compiler.outputFileSystem = fs;
@@ -39,16 +47,20 @@ function runWebpack(callback, config) {
     let matches;
     while ((matches = cssMatcher.exec(html))) {
       cssAssets.push(matches[1]);
+      cssCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
     }
     while ((matches = cssMatcher.exec(html2))) {
       cssAssets2.push(matches[1]);
+      cssCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
     }
 
     while ((matches = jsMatcher.exec(html))) {
       jsAssets.push(matches[1]);
+      jsCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
     }
     while ((matches = jsMatcher.exec(html2))) {
       jsAssets2.push(matches[1]);
+      jsCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
     }
 
     callback();
@@ -61,6 +73,7 @@ function getConfig({
   publicPath2 = '/assets',
   prodUrl,
   multiple,
+  crossOrigin,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -110,6 +123,7 @@ function getConfig({
     modules,
     prod,
     prodUrl,
+    crossOrigin,
   };
 
   if (publicPath) {
@@ -222,6 +236,30 @@ describe('Webpack Integration', () => {
           `//unpkg.com/nyc@${versions.nyc}/index.js`,
           `//unpkg.com/archy@${versions.archy}/index.js`,
           '/assets/app.js',
+        ]);
+      });
+    });
+
+    describe('When `crossOrigin` is set', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, crossOrigin: 'anonymous' }));
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssCrossOrigin).toEqual([
+          false,
+          true,
+          true,
+        ]);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsCrossOrigin).toEqual([
+          false,
+          true,
+          true,
+          true,
+          false,
         ]);
       });
     });

@@ -11,11 +11,13 @@ class WebpackCdnPlugin {
     modules, prod,
     prodUrl = '//unpkg.com/:name@:version/:path',
     devUrl = ':name/:path', publicPath,
+    crossOrigin = false,
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
     this.prefix = publicPath;
     this.url = this.prod ? prodUrl : devUrl;
+    this.crossOrigin = crossOrigin;
   }
 
   apply(compiler) {
@@ -58,7 +60,7 @@ class WebpackCdnPlugin {
 
     compiler.options.externals = externals;
 
-    if (this.prod) {
+    if (this.prod && this.crossOrigin) {
       compiler.plugin('after-plugins', compiler => {
         compiler.plugin('this-compilation', compilation => {
           compilation.plugin('html-webpack-plugin-alter-asset-tags', this.alterAssetTags.bind(this));
@@ -68,14 +70,14 @@ class WebpackCdnPlugin {
   }
 
   alterAssetTags(pluginArgs, callback) {
-    const prefix = this.url.split('/:')[0];
-    function filterTag(tag) {
+    const filterTag = tag => {
+      const prefix = this.url.split('/:')[0];
       const url = (tag.tagName === 'script' && tag.attributes.src) || (tag.tagName === 'link' && tag.attributes.href);
       return url && url.indexOf(prefix) === 0;
-    }
-    function processTag(tag) {
-      tag.attributes.crossorigin = 'anonymous';
-    }
+    };
+    const processTag = tag => {
+      tag.attributes.crossorigin = this.crossOrigin;
+    };
     pluginArgs.head.filter(filterTag).forEach(processTag);
     pluginArgs.body.filter(filterTag).forEach(processTag);
     callback(null, pluginArgs);
