@@ -214,7 +214,11 @@ Prefixes the assets with this string, if none is provided it will fallback to th
 
 ##### `optimize`:`boolean` | `false`
 
-Set to `true` to ignore every module not actually required in your bundle. 
+Set to `true` to ignore every module not actually required in your bundle.
+
+##### `crossOrigin`:`string` (optional)
+
+Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information.
 
 ### Contribution
 
