@@ -108,8 +108,9 @@ When you set `prod` to `false`, it will output urls using `publicPath`, so you m
     <link href="/node_modules/vue/dist/vue.css" rel="stylesheet">
   </head>
   <body>
-  <script type="text/javascript" src="/node_modules/vue/dist/vue.runtime.common.js"></script>
-  <script type="text/javascript" src="/node_modules/vue-router/dist/vue-router.common.js"></script>
+  <script type="text/javascript" src="/node_modules/vue/dist/vue.runtime.min.js"></script>
+  <script type="text/javascript" src="/node_modules/vue-router/dist/vue-router.min.js"></script>
+  <script type="text/javascript" src="/node_modules/vuex/dist/vuex.min.js"></script>
   <script type="text/javascript" src="/assets/app.js"></script>
   </body>
 </html>
