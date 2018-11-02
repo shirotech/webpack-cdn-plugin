@@ -46,10 +46,17 @@ module.exports = {
         {
           name: 'vue',
           var: 'Vue',
-          style: 'dist/vue.css'
+          path: 'dist/vue.runtime.min.js'
         },
         {
-          name: 'vue-router'
+          name: 'vue-router',
+          var: 'VueRouter',
+          path: 'dist/vue-router.min.js'
+        },
+        {
+          name: 'vuex',
+          var: 'Vuex',
+          path: 'dist/vuex.min.js'
         }
       ],
       publicPath: '/node_modules'
@@ -70,11 +77,24 @@ This will generate an `index.html` file with something like below:
     <link href="//unpkg.com/vue@2.3.3/dist/vue.css" rel="stylesheet">
   </head>
   <body>
-  <script type="text/javascript" src="//unpkg.com/vue@2.3.3/dist/vue.runtime.common.js"></script>
-  <script type="text/javascript" src="//unpkg.com/vue-router@2.5.3/dist/vue-router.common.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vue@2.5.17/dist/vue.runtime.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vuex@3.0.1/dist/vuex.min.js"></script>
   <script type="text/javascript" src="/assets/app.js"></script>
   </body>
 </html>
+```
+
+And u also need config in
+
+```javascript
+# src/router
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+if (!window.VueRouter) Vue.use(VueRouter)
+// ...
+// Any lib need Vue.use() just to do so
 ```
 
 When you set `prod` to `false`, it will output urls using `publicPath`, so you might need to expose it as some sort of static route.
