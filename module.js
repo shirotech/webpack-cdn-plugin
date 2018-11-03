@@ -181,8 +181,9 @@ class WebpackCdnPlugin {
 
     modules.filter(p => p[pathsKey].length > 0)
       .forEach(p => {
+        const moduleSpecificUrl = (prod ? p.prodUrl : p.devUrl)
         p[pathsKey].forEach(s => files.push(
-          prefix + url.replace(paramsRegex, (m, p1) => {
+          prefix + (moduleSpecificUrl || url).replace(paramsRegex, (m, p1) => {
             if (prod && p.cdn && p1 === 'name') {
               return p.cdn;
             }
