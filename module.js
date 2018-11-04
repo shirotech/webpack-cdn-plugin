@@ -63,7 +63,7 @@ class WebpackCdnPlugin {
 
     Reflect.ownKeys(this.modules).forEach((key) => {
       const mods = this.modules[key];
-      mods.forEach((p) => {
+      mods.filter((m) => !m.cssOnly).forEach((p) => {
         externals[p.name] = p.var || p.name;
       });
     });
