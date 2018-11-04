@@ -264,3 +264,5 @@ Many thanks to the following contributors:
 - [mahcloud](https://github.com/mahcloud)
 - [mistic100](https://github.com/mistic100)
 - [gaje](https://github.com/gaje)
+- [myst729](https://github.com/myst729)
+- [MrTreasure](https://github.com/MrTreasure)
