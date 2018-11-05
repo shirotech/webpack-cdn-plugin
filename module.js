@@ -196,6 +196,6 @@ class WebpackCdnPlugin {
   }
 }
 
-WebpackCdnPlugin.node_modules = path.join(__dirname, '..');
+WebpackCdnPlugin.node_modules = path.join(process.cwd(), 'node_modules');
 
 export default WebpackCdnPlugin;

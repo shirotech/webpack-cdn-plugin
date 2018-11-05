@@ -9,7 +9,7 @@
     "install": "babel module.js --out-file main.js",
     "commitmsg": "validate-commit-msg",
     "precommit": "npm test",
-    "start": "cd example && webpack"
+    "start": "webpack --config example/webpack.config.js"
   },
   "repository": {
     "type": "git",

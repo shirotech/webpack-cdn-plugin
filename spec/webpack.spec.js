@@ -15,8 +15,6 @@ let jsCrossOrigin;
 let cssCrossOrigin2;
 let jsCrossOrigin2;
 
-WebpackCdnPlugin.node_modules = path.join(__dirname, '../node_modules');
-
 const versions = {
   jasmine: WebpackCdnPlugin.getVersion('jasmine'),
   jasmineSpecReporter: WebpackCdnPlugin.getVersion('jasmine-spec-reporter'),
