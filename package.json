@@ -69,9 +69,9 @@
     "webpack": "^4.24.0"
   },
   "peerDependencies": {
-    "@babel/cli": ">= 6",
-    "@babel/core": ">= 6",
-    "@babel/preset-env": ">= 6"
+    "@babel/cli": ">=7",
+    "@babel/core": ">=7",
+    "@babel/preset-env": ">=7"
   },
   "dependencies": {
     "babel-plugin-add-module-exports": "^1.0.0"
