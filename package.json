@@ -8,7 +8,8 @@
     "test": "nyc jasmine",
     "install": "babel module.js --out-file main.js",
     "commitmsg": "validate-commit-msg",
-    "precommit": "npm test"
+    "precommit": "npm test",
+    "start": "cd example && webpack"
   },
   "repository": {
     "type": "git",
@@ -66,7 +67,8 @@
     "jasmine-spec-reporter": "^4.2.1",
     "nyc": "^13.1.0",
     "validate-commit-msg": "^2.14.0",
-    "webpack": "^4.24.0"
+    "webpack": "^4.24.0",
+    "webpack-cli": "^3.1.2"
   },
   "peerDependencies": {
     "@babel/cli": ">=7",
