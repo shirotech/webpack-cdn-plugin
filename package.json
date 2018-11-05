@@ -72,5 +72,8 @@
     "@babel/cli": ">= 6",
     "@babel/core": ">= 6",
     "@babel/preset-env": ">= 6"
+  },
+  "dependencies": {
+    "babel-plugin-add-module-exports": "^1.0.0"
   }
 }
