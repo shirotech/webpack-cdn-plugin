@@ -5,7 +5,8 @@
   "main": "module.js",
   "module": "module.js",
   "scripts": {
-    "test": "nyc jasmine",
+    "lint": "eslint module.js",
+    "test": "npm run lint && nyc jasmine",
     "commitmsg": "validate-commit-msg",
     "precommit": "npm test",
     "start": "webpack --config example/webpack.config.js"
@@ -52,7 +53,7 @@
   "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
   "devDependencies": {
     "archy": "^1.0.0",
-    "eslint": "^5.8.0",
+    "eslint": "4",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "html-webpack-plugin": "^3.2.0",
