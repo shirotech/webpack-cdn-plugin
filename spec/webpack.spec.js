@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackCdnPlugin = require('../module');
 
-
 const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?>/g;
 const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?>/g;
 
@@ -115,26 +114,16 @@ function getConfig({
       {
         name: 'jasmine',
         cdn: 'jasmine2',
-        paths: [
-          'index1.js',
-          'index2.js'
-        ],
-        styles: [
-          'style1.css',
-          'style2.css'
-        ]
+        paths: ['index1.js', 'index2.js'],
+        styles: ['style1.css', 'style2.css'],
       },
       {
         name: 'archy',
         path: 'index1.js',
-        paths: [
-          'index2.js'
-        ],
+        paths: ['index2.js'],
         style: 'style1.css',
-        styles: [
-          'style2.css'
-        ]
-      }
+        styles: ['style2.css'],
+      },
     ];
   }
 
@@ -265,25 +254,30 @@ describe('Webpack Integration', () => {
 
     describe('With multiple files', () => {
       beforeAll((done) => {
-        runWebpack(done, getConfig({ prod: true, publicPath: null, publicPath2: null, multipleFiles: true }));
+        runWebpack(
+          done,
+          getConfig({
+            prod: true, publicPath: null, publicPath2: null, multipleFiles: true,
+          }),
+        );
       });
 
       it('should output the right assets (css)', () => {
         expect(cssAssets).toEqual([
-            `https://unpkg.com/jasmine2@${versions.jasmine}/style1.css`,
-            `https://unpkg.com/jasmine2@${versions.jasmine}/style2.css`,
-            `https://unpkg.com/archy@${versions.archy}/style1.css`,
-            `https://unpkg.com/archy@${versions.archy}/style2.css`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/style1.css`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/style2.css`,
+          `https://unpkg.com/archy@${versions.archy}/style1.css`,
+          `https://unpkg.com/archy@${versions.archy}/style2.css`,
         ]);
       });
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
-            `https://unpkg.com/jasmine2@${versions.jasmine}/index1.js`,
-            `https://unpkg.com/jasmine2@${versions.jasmine}/index2.js`,
-            `https://unpkg.com/archy@${versions.archy}/index1.js`,
-            `https://unpkg.com/archy@${versions.archy}/index2.js`,
-            '/app.js'
+          `https://unpkg.com/jasmine2@${versions.jasmine}/index1.js`,
+          `https://unpkg.com/jasmine2@${versions.jasmine}/index2.js`,
+          `https://unpkg.com/archy@${versions.archy}/index1.js`,
+          `https://unpkg.com/archy@${versions.archy}/index2.js`,
+          '/app.js',
         ]);
       });
     });
@@ -294,21 +288,11 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssCrossOrigin).toEqual([
-          false,
-          true,
-          true,
-        ]);
+        expect(cssCrossOrigin).toEqual([false, true, true]);
       });
 
       it('should output the right assets (js)', () => {
-        expect(jsCrossOrigin).toEqual([
-          false,
-          true,
-          true,
-          true,
-          false,
-        ]);
+        expect(jsCrossOrigin).toEqual([false, true, true, true, false]);
       });
     });
   });
@@ -416,7 +400,12 @@ describe('Webpack Integration', () => {
 
     describe('With multiple files', () => {
       beforeAll((done) => {
-        runWebpack(done, getConfig({ prod: false, publicPath: null, publicPath2: null, multipleFiles: true }));
+        runWebpack(
+          done,
+          getConfig({
+            prod: false, publicPath: null, publicPath2: null, multipleFiles: true,
+          }),
+        );
       });
 
       it('should output the right assets (css)', () => {
@@ -434,27 +423,27 @@ describe('Webpack Integration', () => {
           '/jasmine/index2.js',
           '/archy/index1.js',
           '/archy/index2.js',
-          '/app.js'
+          '/app.js',
         ]);
       });
     });
 
     describe('With `optimize`', () => {
       beforeAll((done) => {
-        runWebpack(done, getConfig({ prod: false, publicPath: null, publicPath2: null, optimize: true }));
+        runWebpack(
+          done,
+          getConfig({
+            prod: false, publicPath: null, publicPath2: null, optimize: true,
+          }),
+        );
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssAssets).toEqual([
-            '/jasmine/style.css',
-        ]);
+        expect(cssAssets).toEqual(['/jasmine/style.css']);
       });
 
       it('should output the right assets (js)', () => {
-        expect(jsAssets).toEqual([
-            '/jasmine/lib/jasmine.js',
-            '/app.js',
-        ]);
+        expect(jsAssets).toEqual(['/jasmine/lib/jasmine.js', '/app.js']);
       });
     });
   });

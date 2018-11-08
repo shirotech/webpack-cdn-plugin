@@ -11,7 +11,7 @@ Basically this will allow you to greatly reduce build time when developing and i
 
 ### Installation
 
-It is recommended to run webpack on node 5.x or higher
+It is recommended to run webpack on **node 5.x or higher**
 
 Install the plugin with npm:
 
