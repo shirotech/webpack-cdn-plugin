@@ -11,9 +11,6 @@
     "lcov",
     "text"
   ],
-  "require": [
-    "@babel/register"
-  ],
   "cache": true,
   "watermarks": {
     "lines": [ 90, 100 ],
