@@ -2,7 +2,7 @@
   "name": "webpack-cdn-plugin",
   "version": "2.3.3",
   "description": "A webpack plugin that use externals of CDN urls for production and local node_modules for development",
-  "main": "main.js",
+  "main": "module.js",
   "module": "module.js",
   "scripts": {
     "test": "nyc jasmine",
@@ -15,7 +15,6 @@
     "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
   },
   "files": [
-    ".babelrc",
     "module.js",
     "README.md"
   ],
