@@ -1,4 +1,4 @@
-import path from 'path';
+const path = require('path');
 
 const empty = '';
 const slash = '/';
@@ -198,4 +198,4 @@ class WebpackCdnPlugin {
 
 WebpackCdnPlugin.node_modules = path.join(process.cwd(), 'node_modules');
 
-export default WebpackCdnPlugin;
+module.exports = WebpackCdnPlugin;

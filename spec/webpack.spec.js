@@ -1,7 +1,8 @@
-import path from 'path';
-import webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import WebpackCdnPlugin from '../module';
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackCdnPlugin = require('../module');
+
 
 const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?>/g;
 const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?>/g;
