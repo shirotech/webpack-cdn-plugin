@@ -1,7 +1,8 @@
 language: node_js
 node_js:
-  - "5"
-  - "8"
+  - stable
+  - lts/*
+  - 6.9
 cache: yarn
 after_success:
   - yarn global add codecov
