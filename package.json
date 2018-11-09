@@ -62,8 +62,10 @@
     "jasmine-spec-reporter": "^4.2.1",
     "nyc": "^13.1.0",
     "validate-commit-msg": "^2.14.0",
-    "webpack": "^4.24.0",
+    "webpack": "4.20.2",
     "webpack-cli": "^3.1.2"
   },
-  "dependencies": {}
+  "peerDependencies": {
+    "html-webpack-plugin": ">=3"
+  }
 }
