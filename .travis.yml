@@ -4,6 +4,10 @@ node_js:
   - lts/*
   - 6.9
 cache: yarn
+install:
+  - travis_retry yarn --ignore-platform
+script:
+  - travis_retry yarn test
 after_success:
   - yarn global add codecov
   - codecov
