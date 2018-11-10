@@ -208,6 +208,14 @@ Useful when you wanted to use your own build version of the library for js files
 
 Useful when you wanted to use your own build version of the library for css files
 
+`prodUrl`:`string` (option)
+
+Overrides the global prodUrl, allowing you to specify the CDN location for a specific module
+
+`devUrl`:`string` (option)
+
+Overrides the global devUrl, allowing you to specify the location for a specific module
+
 
 ##### `prod`:`boolean` | `true`
 
