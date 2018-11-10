@@ -70,6 +70,8 @@ function getConfig({
   publicPath = '/node_modules',
   publicPath2 = '/assets',
   prodUrl,
+  moduleProdUrl,
+  moduleDevUrl,
   multiple,
   multipleFiles,
   optimize,
@@ -94,6 +96,12 @@ function getConfig({
     },
     { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
   ];
+  if (moduleProdUrl) {
+    modules[2].prodUrl = moduleProdUrl;
+  }
+  if (moduleDevUrl) {
+    modules[2].devUrl = moduleDevUrl;
+  }
   if (multiple) {
     modules = {
       module1: modules,
@@ -205,6 +213,39 @@ describe('Webpack Integration', () => {
           }/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
+          '/assets/app.js',
+        ]);
+      });
+    });
+
+    describe('When module `prodUrl` is set', () => {
+      beforeAll((done) => {
+        runWebpack(
+          done,
+          getConfig({
+            prod: true,
+            prodUrl: '//cdnjs.cloudflare.com/ajax/libs/:name/:version/:path',
+            moduleProdUrl: '//cdn.jsdelivr.net/npm/:name@:version/:path',
+          }),
+        );
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual([
+          '/assets/local.css',
+          `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/style.css`,
+          `//cdn.jsdelivr.net/npm/jasmine2@${versions.jasmine}/style.css`,
+        ]);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          '/assets/local.js',
+          `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${
+            versions.jasmineSpecReporter
+          }/index.js`,
+          `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
+          `//cdn.jsdelivr.net/npm/jasmine2@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
         ]);
       });
@@ -357,6 +398,33 @@ describe('Webpack Integration', () => {
           '/node_modules/jasmine-spec-reporter/index.js',
           '/node_modules/nyc/index.js',
           '/node_modules/jasmine/lib/jasmine.js',
+          '/assets/app.js',
+        ]);
+      });
+    });
+
+    describe('When module `devUrl` is set', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({
+          prod: false,
+          moduleDevUrl: ":name/dist/:path",
+        }));
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual([
+          '/assets/local.css',
+          '/node_modules/nyc/style.css',
+          '/node_modules/jasmine/dist/style.css',
+        ]);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          '/assets/local.js',
+          '/node_modules/jasmine-spec-reporter/index.js',
+          '/node_modules/nyc/index.js',
+          '/node_modules/jasmine/dist/lib/jasmine.js',
           '/assets/app.js',
         ]);
       });
