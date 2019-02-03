@@ -151,6 +151,9 @@ function getConfig({
     mode: prod ? 'production' : 'development',
     entry: path.join(__dirname, '../example/app.js'),
     output,
+    optimization: {
+      minimize: false,
+    },
     plugins: [
       new HtmlWebpackPlugin({ filename: '../index.html' }),
       new HtmlWebpackPlugin({ filename: '../index2.html', cdnModule: 'module2' }),
