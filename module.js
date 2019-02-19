@@ -15,6 +15,7 @@ class WebpackCdnPlugin {
     publicPath,
     optimize = false,
     crossOrigin = false,
+    manifest = false,
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
@@ -22,6 +23,7 @@ class WebpackCdnPlugin {
     this.url = this.prod ? prodUrl : devUrl;
     this.optimize = optimize;
     this.crossOrigin = crossOrigin;
+    this.manifest = manifest;
   }
 
   apply(compiler) {
@@ -41,28 +43,48 @@ class WebpackCdnPlugin {
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
-      compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
-        'WebpackCdnPlugin',
-        (data, callback) => {
-          const moduleId = data.plugin.options.cdnModule;
-          if (moduleId !== false) {
-            let modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
-            if (modules) {
-              if (this.optimize) {
-                const usedModules = WebpackCdnPlugin._getUsedModules(compilation);
-                modules = modules.filter(p => usedModules[p.name]);
-              }
+      if (this.manifest) {
+        compiler.hooks.compilation.tap('done', () => {
+          const assets = {};
+          const modules = this.modules[Reflect.ownKeys(this.modules)[0]];
+          WebpackCdnPlugin._cleanModules(modules);
+          assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs);
+          assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs);
+          compilation.assets['cdn-manifest.json'] = {
+            source() {
+              return JSON.stringify(assets);
+            },
+            size() {
+              return assets.length;
+            },
+          };
+        });
+      } else {
+        compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
+          'WebpackCdnPlugin',
+          (data, callback) => {
+            const moduleId = data.plugin.options.cdnModule;
+            if (moduleId !== false) {
+              let modules = this.modules[moduleId || Reflect.ownKeys(this.modules)[0]];
+              if (modules) {
+                if (this.optimize) {
+                  const usedModules = WebpackCdnPlugin._getUsedModules(compilation);
+                  modules = modules.filter(p => usedModules[p.name]);
+                }
 
-              WebpackCdnPlugin._cleanModules(modules);
-              data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
-              data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
-                data.assets.css,
-              );
+                WebpackCdnPlugin._cleanModules(modules);
+                data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(
+                  data.assets.js,
+                );
+                data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
+                  data.assets.css,
+                );
+              }
             }
-          }
-          callback(null, data);
-        },
-      );
+            callback(null, data);
+          },
+        );
+      }
     });
     const externals = compiler.options.externals || {};
 
@@ -77,7 +99,7 @@ class WebpackCdnPlugin {
 
     compiler.options.externals = externals;
 
-    if (this.prod && this.crossOrigin) {
+    if (this.prod && this.crossOrigin && !this.manifest) {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
         compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
           compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {

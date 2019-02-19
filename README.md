@@ -247,7 +247,11 @@ Set to `true` to ignore every module not actually required in your bundle.
 
 ##### `crossOrigin`:`string` (optional)
 
-Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information.
+Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information. This setting is ignored when writing to a manifest (`manifest: true`).
+
+##### `manifest`:`boolean` | `false`
+
+Instead of writing asset paths to an HTML template via `HtmlWebpackPlugin`, a `cdn-manifes.json` file will be created that contains the paths to your assets.
 
 ### Contribution
 
