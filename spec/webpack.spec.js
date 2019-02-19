@@ -14,7 +14,7 @@ let cssCrossOrigin;
 let jsCrossOrigin;
 let cssCrossOrigin2;
 let jsCrossOrigin2;
-let manifest;
+let manifestFile;
 
 const versions = {
   jasmine: WebpackCdnPlugin.getVersion('jasmine'),
@@ -35,7 +35,7 @@ function runWebpack(callback, config) {
   jsCrossOrigin = [];
   cssCrossOrigin2 = [];
   jsCrossOrigin2 = [];
-  manifest = null;
+  manifestFile = null;
 
   const compiler = webpack(config);
   compiler.outputFileSystem = fs;
@@ -62,24 +62,24 @@ function runWebpack(callback, config) {
       jsAssets2.push(matches[1]);
       jsCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
     }
-    manifest = stats.compilation.assets['cdn-manifest.json'] && JSON.parse(stats.compilation.assets['cdn-manifest.json'].source());
+    manifestFile = stats.compilation.assets['cdn-manifest.json'] && JSON.parse(stats.compilation.assets['cdn-manifest.json'].source());
     callback();
   });
 }
 
 function getConfig({
-                     prod,
-                     publicPath = '/node_modules',
-                     publicPath2 = '/assets',
-                     prodUrl,
-                     moduleProdUrl,
-                     moduleDevUrl,
-                     multiple,
-                     multipleFiles,
-                     optimize,
-                     crossOrigin,
-                     manifest,
-                   }) {
+  prod,
+  publicPath = '/node_modules',
+  publicPath2 = '/assets',
+  prodUrl,
+  moduleProdUrl,
+  moduleDevUrl,
+  multiple,
+  multipleFiles,
+  optimize,
+  crossOrigin,
+  manifest,
+}) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
     filename: 'app.js',
@@ -217,7 +217,7 @@ describe('Webpack Integration', () => {
           '/assets/local.js',
           `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${
             versions.jasmineSpecReporter
-            }/index.js`,
+          }/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/jasmine2/${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
@@ -250,7 +250,7 @@ describe('Webpack Integration', () => {
           '/assets/local.js',
           `//cdnjs.cloudflare.com/ajax/libs/jasmine-spec-reporter/${
             versions.jasmineSpecReporter
-            }/index.js`,
+          }/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdn.jsdelivr.net/npm/jasmine2@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
@@ -355,18 +355,18 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the manifest json', () => {
-        expect(manifest).toEqual(jasmine.any(Object));
+        expect(manifestFile).toEqual(jasmine.any(Object));
       });
 
       it('should output the manifest with right assets (js)', () => {
-        expect(manifest.js).toEqual(['/assets/local.js',
+        expect(manifestFile.js).toEqual(['/assets/local.js',
           'https://unpkg.com/jasmine-spec-reporter@4.2.1/index.js',
           'https://unpkg.com/nyc@13.3.0/index.js',
           'https://unpkg.com/jasmine2@3.3.1/lib/jasmine.js']);
       });
 
       it('should output the manifest with right assets (css)', () => {
-        expect(manifest.css).toEqual(['/assets/local.css',
+        expect(manifestFile.css).toEqual(['/assets/local.css',
           'https://unpkg.com/nyc@13.3.0/style.css',
           'https://unpkg.com/jasmine2@3.3.1/style.css']);
       });
@@ -442,7 +442,7 @@ describe('Webpack Integration', () => {
       beforeAll((done) => {
         runWebpack(done, getConfig({
           prod: false,
-          moduleDevUrl: ":name/dist/:path",
+          moduleDevUrl: ':name/dist/:path',
         }));
       });
 
@@ -562,18 +562,18 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the manifest json', () => {
-        expect(manifest).toEqual(jasmine.any(Object));
+        expect(manifestFile).toEqual(jasmine.any(Object));
       });
 
       it('should output the manifest with right assets (js)', () => {
-        expect(manifest.js).toEqual(['/local.js',
+        expect(manifestFile.js).toEqual(['/local.js',
           '/jasmine-spec-reporter/index.js',
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js']);
       });
 
       it('should output the manifest with right assets (css)', () => {
-        expect(manifest.css).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
+        expect(manifestFile.css).toEqual(['/local.css', '/nyc/style.css', '/jasmine/style.css']);
       });
     });
   });
