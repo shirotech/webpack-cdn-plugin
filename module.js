@@ -45,10 +45,10 @@ class WebpackCdnPlugin {
         'WebpackCdnPlugin',
         (data, callback) => {
           const moduleId = data.plugin.options.cdnModule;
-          const assetsCdnName = data.plugin.options.assetsCdnName;
+          const { assetsCdnName } = data.plugin.options;
 
-          if(assetsCdnName) {
-            data.assets[assetsCdnName] =  data.assets[assetsCdnName] || {js:[], css:[]};
+          if (assetsCdnName) {
+            data.assets[assetsCdnName] = data.assets[assetsCdnName] || { js: [], css: [] };
           }
 
           if (moduleId !== false) {
@@ -60,11 +60,14 @@ class WebpackCdnPlugin {
               }
 
               WebpackCdnPlugin._cleanModules(modules);
-              if(assetsCdnName) {
-                data.assets[assetsCdnName].js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets[assetsCdnName].js);
-                data.assets[assetsCdnName].css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(data.assets[assetsCdnName].css);
+              if (assetsCdnName) {
+                data.assets[assetsCdnName].js = WebpackCdnPlugin._getJs(modules, ...getArgs)
+                  .concat(data.assets[assetsCdnName].js);
+                data.assets[assetsCdnName].css = WebpackCdnPlugin._getCss(modules, ...getArgs)
+                  .concat(data.assets[assetsCdnName].css);
               } else {
-                data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
+                data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs)
+                  .concat(data.assets.js);
                 data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
                   data.assets.css,
                 );
