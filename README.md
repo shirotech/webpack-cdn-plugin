@@ -168,6 +168,34 @@ The extra `html-webpack-plugin` option `cdnModule` corresponds to the configurat
 
 More detail to see [#13](https://github.com/van-nguyen/webpack-cdn-plugin/pull/13)
 
+The extra `html-webpack-plugin` option `assetsCdnName`:
+```js
+plugins:[
+// ...otherConfig
+new HtmlWebpackPlugin({
+      title: 'title',
+      assetsCdnName: 'cdn',
+      favicon: 'path/to/favicon',
+      template: 'path/to/template',
+      filename: 'filename',
+      // other config
+ }),
+ new WebpackCdnPlugin({
+   modules: [
+      { name: 'react', var: 'React', path: `dist/react.min.js` },
+      { name: 'react-dom', var: 'ReactDOM', path: `dist/react-dom.min.js` },
+    ]
+ })
+]
+```
+
+```html
+<% htmlWebpackPlugin.files.cdn.js.forEach(function(link){ %>
+    <script src="<%= link %>"></script>
+<% }) %>
+```
+Customize the injected location by specifying the injected key `html-webpack-plugin` option `assetsCdnName` to get the injected cdn link.
+
 `name`:`string`
 
 The name of the module you want to externalize
