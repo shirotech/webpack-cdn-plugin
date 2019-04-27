@@ -15,6 +15,7 @@ class WebpackCdnPlugin {
     publicPath,
     optimize = false,
     crossOrigin = false,
+    pathToNodeModules = process.cwd(),
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
     this.prod = prod !== false;
@@ -22,6 +23,7 @@ class WebpackCdnPlugin {
     this.url = this.prod ? prodUrl : devUrl;
     this.optimize = optimize;
     this.crossOrigin = crossOrigin;
+    this.pathToNodeModules = pathToNodeModules;
   }
 
   apply(compiler) {
@@ -53,7 +55,7 @@ class WebpackCdnPlugin {
                 modules = modules.filter(p => usedModules[p.name]);
               }
 
-              WebpackCdnPlugin._cleanModules(modules);
+              WebpackCdnPlugin._cleanModules(modules, this.pathToNodeModules);
               data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
                 data.assets.css,
@@ -153,10 +155,10 @@ class WebpackCdnPlugin {
    * Note that the path should not end with `node_modules`.
    *
    * @param {Array<Object>} modules the modules to clean
-   * @param {string} [pathToNodeModules=process.cwd()]
+   * @param {string} [pathToNodeModules]
    * @private
    */
-  static _cleanModules(modules, pathToNodeModules = process.cwd()) {
+  static _cleanModules(modules, pathToNodeModules) {
     modules.forEach((p) => {
       p.version = WebpackCdnPlugin.getVersionInNodeModules(p.name, pathToNodeModules);
 

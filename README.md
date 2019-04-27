@@ -249,6 +249,12 @@ Set to `true` to ignore every module not actually required in your bundle.
 
 Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information.
 
+##### `pathToNodeModules?: string` (optional)
+
+Path to the `node_modules` folder to "serve" packages from. This is used to determinate what version to request for packages from the CDN.
+
+If not provided, the value returned by `process.cwd()` is used.
+
 ### Contribution
 
 This is a pretty simple plugin and caters mostly for my needs. However, I have made it as flexible and customizable as possible.
