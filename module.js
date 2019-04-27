@@ -107,11 +107,17 @@ class WebpackCdnPlugin {
   }
 
   /**
-   * Returns the version of a package
+   * Returns the version of a package in the root of the `node_modules` folder.
+   *
+   * If `pathToNodeModules` param is not provided, the current working directory is used instead.
+   * Note that the path should not end with `node_modules`.
+   *
+   * @param {string} name name of the package whose version to get.
+   * @param {string} [pathToNodeModules=process.cwd()]
    */
-  static getVersionInNodeModules(name) {
+  static getVersionInNodeModules(name, pathToNodeModules = process.cwd()) {
     try {
-      return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
+      return require(path.join(pathToNodeModules, 'node_modules', name, packageJson)).version;
     } catch (e) {
       /* istanbul ignore next */
       return null;
@@ -217,7 +223,5 @@ class WebpackCdnPlugin {
     return files;
   }
 }
-
-WebpackCdnPlugin.node_modules = path.join(process.cwd(), 'node_modules');
 
 module.exports = WebpackCdnPlugin;
