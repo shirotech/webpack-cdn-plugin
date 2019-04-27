@@ -109,7 +109,7 @@ class WebpackCdnPlugin {
   /**
    * Returns the version of a package
    */
-  static getVersion(name) {
+  static getVersionInNodeModules(name) {
     try {
       return require(path.join(WebpackCdnPlugin.node_modules, name, packageJson)).version;
     } catch (e) {
@@ -145,7 +145,7 @@ class WebpackCdnPlugin {
    */
   static _cleanModules(modules) {
     modules.forEach((p) => {
-      p.version = WebpackCdnPlugin.getVersion(p.name);
+      p.version = WebpackCdnPlugin.getVersionInNodeModules(p.name);
 
       if (!p.paths) {
         p.paths = [];

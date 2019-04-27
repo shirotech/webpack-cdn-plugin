@@ -16,11 +16,11 @@ let cssCrossOrigin2;
 let jsCrossOrigin2;
 
 const versions = {
-  jasmine: WebpackCdnPlugin.getVersion('jasmine'),
-  jasmineSpecReporter: WebpackCdnPlugin.getVersion('jasmine-spec-reporter'),
-  nyc: WebpackCdnPlugin.getVersion('nyc'),
-  jasmineCore: WebpackCdnPlugin.getVersion('jasmine-core'),
-  archy: WebpackCdnPlugin.getVersion('archy'),
+  jasmine: WebpackCdnPlugin.getVersionInNodeModules('jasmine'),
+  jasmineSpecReporter: WebpackCdnPlugin.getVersionInNodeModules('jasmine-spec-reporter'),
+  nyc: WebpackCdnPlugin.getVersionInNodeModules('nyc'),
+  jasmineCore: WebpackCdnPlugin.getVersionInNodeModules('jasmine-core'),
+  archy: WebpackCdnPlugin.getVersionInNodeModules('archy'),
 };
 
 const fs = new webpack.MemoryOutputFileSystem();
