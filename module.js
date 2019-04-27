@@ -148,10 +148,17 @@ class WebpackCdnPlugin {
    * - populate the "version" property of each module
    * - construct the "paths" and "styles" arrays
    * - add a default path if none provided
+   *
+   * If `pathToNodeModules` param is not provided, the current working directory is used instead.
+   * Note that the path should not end with `node_modules`.
+   *
+   * @param {Array<Object>} modules the modules to clean
+   * @param {string} [pathToNodeModules=process.cwd()]
+   * @private
    */
-  static _cleanModules(modules) {
+  static _cleanModules(modules, pathToNodeModules = process.cwd()) {
     modules.forEach((p) => {
-      p.version = WebpackCdnPlugin.getVersionInNodeModules(p.name);
+      p.version = WebpackCdnPlugin.getVersionInNodeModules(p.name, pathToNodeModules);
 
       if (!p.paths) {
         p.paths = [];
