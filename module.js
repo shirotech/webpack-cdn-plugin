@@ -56,6 +56,9 @@ class WebpackCdnPlugin {
               }
 
               WebpackCdnPlugin._cleanModules(modules, this.pathToNodeModules);
+
+              modules = modules.filter(module => module.version);
+
               data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
                 data.assets.css,
