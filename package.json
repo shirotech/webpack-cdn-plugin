@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/van-nguyen/webpack-cdn-plugin.git"
+    "url": "git+https://github.com/shirotech/webpack-cdn-plugin.git"
   },
   "files": [
     "module.js",
@@ -48,9 +48,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/van-nguyen/webpack-cdn-plugin/issues"
+    "url": "https://github.com/shirotech/webpack-cdn-plugin/issues"
   },
-  "homepage": "https://github.com/van-nguyen/webpack-cdn-plugin",
+  "homepage": "https://github.com/shirotech/webpack-cdn-plugin",
   "devDependencies": {
     "archy": "^1.0.0",
     "eslint": "5.16.0",
