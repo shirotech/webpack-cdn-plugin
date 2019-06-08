@@ -2,8 +2,8 @@
 
 ## CDN extension for the HTML Webpack Plugin
 
-[![Build Status](https://travis-ci.org/van-nguyen/webpack-cdn-plugin.svg?branch=master)](https://travis-ci.org/van-nguyen/webpack-cdn-plugin)
-[![codecov](https://codecov.io/gh/van-nguyen/webpack-cdn-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/van-nguyen/webpack-cdn-plugin)
+[![Build Status](https://travis-ci.org/shirotech/webpack-cdn-plugin.svg?branch=master)](https://travis-ci.org/shirotech/webpack-cdn-plugin)
+[![codecov](https://codecov.io/gh/shirotech/webpack-cdn-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/shirotech/webpack-cdn-plugin)
 
 Enhances [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) functionality by allowing you to specify the modules you want to externalize from node_modules in development and a CDN in production.
 
@@ -166,7 +166,7 @@ The extra `html-webpack-plugin` option `cdnModule` corresponds to the configurat
 - If you do not give `cdnModule` this value, the default is to take the first one
 - If you set `cdnModule = false`, it will not inject cdn
 
-More detail to see [#13](https://github.com/van-nguyen/webpack-cdn-plugin/pull/13)
+More detail to see [#13](https://github.com/shirotech/webpack-cdn-plugin/pull/13)
 
 `name`:`string`
 
