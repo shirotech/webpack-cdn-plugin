@@ -28,16 +28,20 @@ class WebpackCdnPlugin {
 
   apply(compiler) {
     const { output } = compiler.options;
-    output.publicPath = output.publicPath || '/';
+    if (this.prefix === empty) {
+      output.publicPath = empty;
+    } else {
+      output.publicPath = output.publicPath || '/';
 
-    if (output.publicPath.slice(-1) !== slash) {
-      output.publicPath += slash;
-    }
+      if (output.publicPath.slice(-1) !== slash) {
+        output.publicPath += slash;
+      }
 
-    this.prefix = this.prod ? empty : this.prefix || output.publicPath;
+      this.prefix = this.prod ? empty : this.prefix || output.publicPath;
 
-    if (!this.prod && this.prefix.slice(-1) !== slash) {
-      this.prefix += slash;
+      if (!this.prod && this.prefix.slice(-1) !== slash) {
+        this.prefix += slash;
+      }
     }
 
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
