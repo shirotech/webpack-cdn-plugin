@@ -143,7 +143,7 @@ function getConfig({
     crossOrigin,
   };
 
-  if (publicPath) {
+  if (publicPath !== undefined) {
     options.publicPath = publicPath;
   }
 
@@ -378,6 +378,26 @@ describe('Webpack Integration', () => {
           '/nyc/index.js',
           '/jasmine/lib/jasmine.js',
           '/app.js',
+        ]);
+      });
+    });
+
+    describe('When `publicPath` is empty', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: false, publicPath: '' }));
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssAssets).toEqual(['local.css', 'nyc/style.css', 'jasmine/style.css']);
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsAssets).toEqual([
+          'local.js',
+          'jasmine-spec-reporter/index.js',
+          'nyc/index.js',
+          'jasmine/lib/jasmine.js',
+          'app.js',
         ]);
       });
     });
