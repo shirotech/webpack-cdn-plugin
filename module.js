@@ -110,7 +110,7 @@ class WebpackCdnPlugin {
         || (tag.tagName === 'link' && tag.attributes.href);
       return url && url.indexOf(prefix) === 0;
     };
-    const processTag = (tag) => {
+    const processTag = async (tag) => {
       if (this.crossOrigin) {
         tag.attributes.crossorigin = this.crossOrigin;
       }
@@ -121,9 +121,7 @@ class WebpackCdnPlugin {
         } else if (tag.tagName === 'script') {
           url = tag.attributes.src;
         }
-        createSri(url).then((res) => {
-          tag.attributes.integrity = res;
-        });
+        tag.attributes.integrity = await createSri(url);
       }
     };
     pluginArgs.head.filter(filterTag).forEach(processTag);
