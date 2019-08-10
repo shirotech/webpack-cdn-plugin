@@ -121,7 +121,11 @@ class WebpackCdnPlugin {
         } else if (tag.tagName === 'script') {
           url = tag.attributes.src;
         }
-        tag.attributes.integrity = await createSri(url);
+        try {
+          tag.attributes.integrity = await createSri(url);
+        } catch (e) {
+          // empty
+        }
       }
     };
     await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
