@@ -93,7 +93,7 @@ class WebpackCdnPlugin {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
         compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
           compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
+            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapPromise(
               'WebpackCdnPlugin',
               this.alterAssetTags.bind(this),
             );
@@ -103,7 +103,7 @@ class WebpackCdnPlugin {
     }
   }
 
-  alterAssetTags(pluginArgs, callback) {
+  async alterAssetTags(pluginArgs) {
     const filterTag = (tag) => {
       const prefix = this.url.split('/:')[0];
       const url = (tag.tagName === 'script' && tag.attributes.src)
@@ -124,9 +124,8 @@ class WebpackCdnPlugin {
         tag.attributes.integrity = await createSri(url);
       }
     };
-    pluginArgs.head.filter(filterTag).forEach(processTag);
-    pluginArgs.body.filter(filterTag).forEach(processTag);
-    callback(null, pluginArgs);
+    await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
+    await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
   }
 
   /**
