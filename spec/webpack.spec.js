@@ -2,14 +2,19 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackCdnPlugin = require('../module');
+const createSri = require('sri-create');
 
-const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?>/g;
-const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?>/g;
+const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
+const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
 
 let cssAssets;
 let jsAssets;
 let cssAssets2;
 let jsAssets2;
+let cssSri;
+let cssSri2;
+let jsSri;
+let jsSri2;
 let cssCrossOrigin;
 let jsCrossOrigin;
 let cssCrossOrigin2;
@@ -30,6 +35,10 @@ function runWebpack(callback, config) {
   jsAssets = [];
   cssAssets2 = [];
   jsAssets2 = [];
+  cssSri = [];
+  jsSri = [];
+  cssSri2 = [];
+  jsSri2 = [];
   cssCrossOrigin = [];
   jsCrossOrigin = [];
   cssCrossOrigin2 = [];
@@ -42,23 +51,35 @@ function runWebpack(callback, config) {
     const html = stats.compilation.assets['../index.html'].source();
     const html2 = stats.compilation.assets['../index2.html'].source();
 
-    let matches;
+    let matches, sriMatches;
     while ((matches = cssMatcher.exec(html))) {
       cssAssets.push(matches[1]);
       cssCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        cssSri.push(sriMatches[1]);
+      }
     }
     while ((matches = cssMatcher.exec(html2))) {
       cssAssets2.push(matches[1]);
       cssCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        cssSri2.push(sriMatches[1]);
+      }
     }
 
     while ((matches = jsMatcher.exec(html))) {
       jsAssets.push(matches[1]);
       jsCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        jsSri.push(sriMatches[1]);
+      }
     }
     while ((matches = jsMatcher.exec(html2))) {
       jsAssets2.push(matches[1]);
       jsCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        jsSri2.push(sriMatches[1]);
+      }
     }
 
     callback();
@@ -76,6 +97,7 @@ function getConfig({
   multipleFiles,
   optimize,
   crossOrigin,
+  sri,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -141,6 +163,7 @@ function getConfig({
     prodUrl,
     optimize,
     crossOrigin,
+    sri,
   };
 
   if (publicPath !== undefined) {
@@ -337,6 +360,16 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsCrossOrigin).toEqual([false, true, true, true, false]);
+      });
+    });
+
+    describe('When `sri` is set', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, sri: true }));
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsSri).toEqual(['sha384-1qoBcvQJ59J+xckKzljKqGxw5cSVQC9W5MmnFytO+vgTL7dPmrUL2tZnt+GQWb+o']);
       });
     });
   });
