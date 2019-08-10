@@ -118,7 +118,8 @@ class WebpackCdnPlugin {
         let url;
         if (tag.tagName === 'link') {
           url = tag.attributes.href;
-        } else if (tag.tagName === 'script') {
+        }
+        if (tag.tagName === 'script') {
           url = tag.attributes.src;
         }
         try {
