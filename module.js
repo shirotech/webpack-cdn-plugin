@@ -125,7 +125,7 @@ class WebpackCdnPlugin {
         try {
           tag.attributes.integrity = await createSri(url);
         } catch (e) {
-          // empty
+          throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
         }
       }
     };
