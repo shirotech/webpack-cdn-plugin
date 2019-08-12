@@ -26,6 +26,7 @@ const versions = {
   nyc: WebpackCdnPlugin.getVersionInNodeModules('nyc'),
   jasmineCore: WebpackCdnPlugin.getVersionInNodeModules('jasmine-core'),
   archy: WebpackCdnPlugin.getVersionInNodeModules('archy'),
+  bootstrapCssOnly: WebpackCdnPlugin.getVersionInNodeModules('bootstrap-css-only'),
 };
 
 const fs = new webpack.MemoryOutputFileSystem();
@@ -161,6 +162,7 @@ function getConfig({
     if (sri === 'jasmine') {
       modules = [
       { name: 'jasmine', path: 'lib/jasmine.js' },
+      { name: 'bootstrap-css-only', style: 'css/bootstrap-grid.css', cssOnly: true },
       ];
     } else {
       modules = [
@@ -381,6 +383,10 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsSri).toEqual(['sha384-GVSvp94Rbje0r89j7JfSj0QfDdJ9BkFy7YUaUZUgKNc4R6ibqFHWgv+eD1oufzAu']);
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssSri).toEqual(['sha384-5XWkC0mfBIMmreqUtfTPBSrK5ez30uvDZF1gDjKmnDC7DOA+u8MKCcYFB2AhR7VT']);
       });
     });
 
