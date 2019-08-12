@@ -158,9 +158,15 @@ function getConfig({
   }
 
   if (sri) {
-    modules = [
-    { name: 'jasmine', path: 'lib/jasmine.js' },
-    ];
+    if (sri === 'jasmine') {
+      modules = [
+      { name: 'jasmine', path: 'lib/jasmine.js' },
+      ];
+    } else {
+      modules = [
+      { name: 'jasmine', path: 'notfound.js' },
+      ];
+    }
   }
   const options = {
     modules,
@@ -368,15 +374,26 @@ describe('Webpack Integration', () => {
       });
     });
 
-    describe('When `sri` is set', () => {
+    describe('When `sri` generates a hash in prod', () => {
       beforeAll((done) => {
-        runWebpack(done, getConfig({ prod: true, sri: true }));
+        runWebpack(done, getConfig({ prod: true, sri: 'jasmine' }));
       });
 
       it('should output the right assets (js)', () => {
         expect(jsSri).toEqual(['sha384-GVSvp94Rbje0r89j7JfSj0QfDdJ9BkFy7YUaUZUgKNc4R6ibqFHWgv+eD1oufzAu']);
       });
     });
+
+    describe('When `sri` fails to generates a hash in prod', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, sri: 'notfound' }));
+      });
+
+      it('should trigger exception (js)', () => {
+        expect(jsSri).toEqual([]);
+      });
+    });
+
   });
 
   describe('When `prod` is false', () => {
