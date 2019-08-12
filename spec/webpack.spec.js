@@ -108,7 +108,7 @@ function getConfig({
     output.publicPath = publicPath2;
   }
 
-  let modules = [
+  var modules = [
     { name: 'jasmine-spec-reporter', path: 'index.js' },
     {
       name: 'nyc',
@@ -157,6 +157,11 @@ function getConfig({
     ];
   }
 
+  if (sri) {
+    modules = [
+    { name: 'jasmine', path: 'lib/jasmine.js' },
+    ];
+  }
   const options = {
     modules,
     prod,
@@ -369,7 +374,7 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (js)', () => {
-        expect(jsSri).toEqual(['sha384-1qoBcvQJ59J+xckKzljKqGxw5cSVQC9W5MmnFytO+vgTL7dPmrUL2tZnt+GQWb+o']);
+        expect(jsSri).toEqual(['sha384-GVSvp94Rbje0r89j7JfSj0QfDdJ9BkFy7YUaUZUgKNc4R6ibqFHWgv+eD1oufzAu']);
       });
     });
   });
