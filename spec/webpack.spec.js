@@ -2,14 +2,19 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackCdnPlugin = require('../module');
+const createSri = require('sri-create');
 
-const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?>/g;
-const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?>/g;
+const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
+const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
 
 let cssAssets;
 let jsAssets;
 let cssAssets2;
 let jsAssets2;
+let cssSri;
+let cssSri2;
+let jsSri;
+let jsSri2;
 let cssCrossOrigin;
 let jsCrossOrigin;
 let cssCrossOrigin2;
@@ -21,6 +26,7 @@ const versions = {
   nyc: WebpackCdnPlugin.getVersionInNodeModules('nyc'),
   jasmineCore: WebpackCdnPlugin.getVersionInNodeModules('jasmine-core'),
   archy: WebpackCdnPlugin.getVersionInNodeModules('archy'),
+  bootstrapCssOnly: WebpackCdnPlugin.getVersionInNodeModules('bootstrap-css-only'),
 };
 
 const fs = new webpack.MemoryOutputFileSystem();
@@ -30,6 +36,10 @@ function runWebpack(callback, config) {
   jsAssets = [];
   cssAssets2 = [];
   jsAssets2 = [];
+  cssSri = [];
+  jsSri = [];
+  cssSri2 = [];
+  jsSri2 = [];
   cssCrossOrigin = [];
   jsCrossOrigin = [];
   cssCrossOrigin2 = [];
@@ -42,23 +52,35 @@ function runWebpack(callback, config) {
     const html = stats.compilation.assets['../index.html'].source();
     const html2 = stats.compilation.assets['../index2.html'].source();
 
-    let matches;
+    let matches, sriMatches;
     while ((matches = cssMatcher.exec(html))) {
       cssAssets.push(matches[1]);
       cssCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        cssSri.push(sriMatches[1]);
+      }
     }
     while ((matches = cssMatcher.exec(html2))) {
       cssAssets2.push(matches[1]);
       cssCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        cssSri2.push(sriMatches[1]);
+      }
     }
 
     while ((matches = jsMatcher.exec(html))) {
       jsAssets.push(matches[1]);
       jsCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        jsSri.push(sriMatches[1]);
+      }
     }
     while ((matches = jsMatcher.exec(html2))) {
       jsAssets2.push(matches[1]);
       jsCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
+      if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
+        jsSri2.push(sriMatches[1]);
+      }
     }
 
     callback();
@@ -76,6 +98,7 @@ function getConfig({
   multipleFiles,
   optimize,
   crossOrigin,
+  sri,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -86,7 +109,7 @@ function getConfig({
     output.publicPath = publicPath2;
   }
 
-  let modules = [
+  var modules = [
     { name: 'jasmine-spec-reporter', path: 'index.js' },
     {
       name: 'nyc',
@@ -135,12 +158,25 @@ function getConfig({
     ];
   }
 
+  if (sri) {
+    if (sri === 'jasmine') {
+      modules = [
+      { name: 'jasmine', path: 'lib/jasmine.js' },
+      { name: 'bootstrap-css-only', style: 'css/bootstrap-grid.css', cssOnly: true },
+      ];
+    } else {
+      modules = [
+      { name: 'jasmine', path: 'notfound.js' },
+      ];
+    }
+  }
   const options = {
     modules,
     prod,
     prodUrl,
     optimize,
     crossOrigin,
+    sri,
   };
 
   if (publicPath !== undefined) {
@@ -339,6 +375,31 @@ describe('Webpack Integration', () => {
         expect(jsCrossOrigin).toEqual([false, true, true, true, false]);
       });
     });
+
+    describe('When `sri` generates a hash in prod', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, sri: 'jasmine' }));
+      });
+
+      it('should output the right assets (js)', () => {
+        expect(jsSri).toEqual(['sha384-GVSvp94Rbje0r89j7JfSj0QfDdJ9BkFy7YUaUZUgKNc4R6ibqFHWgv+eD1oufzAu']);
+      });
+
+      it('should output the right assets (css)', () => {
+        expect(cssSri).toEqual(['sha384-5XWkC0mfBIMmreqUtfTPBSrK5ez30uvDZF1gDjKmnDC7DOA+u8MKCcYFB2AhR7VT']);
+      });
+    });
+
+    describe('When `sri` fails to generates a hash in prod', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, sri: 'notfound' }));
+      });
+
+      it('should trigger exception (js)', () => {
+        expect(jsSri).toEqual([]);
+      });
+    });
+
   });
 
   describe('When `prod` is false', () => {

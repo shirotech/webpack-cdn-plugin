@@ -1,4 +1,5 @@
 const path = require('path');
+const createSri = require('sri-create');
 
 const empty = '';
 const slash = '/';
@@ -15,6 +16,7 @@ class WebpackCdnPlugin {
     publicPath,
     optimize = false,
     crossOrigin = false,
+    sri = false,
     pathToNodeModules = process.cwd(),
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
@@ -23,6 +25,7 @@ class WebpackCdnPlugin {
     this.url = this.prod ? prodUrl : devUrl;
     this.optimize = optimize;
     this.crossOrigin = crossOrigin;
+    this.sri = sri;
     this.pathToNodeModules = pathToNodeModules;
   }
 
@@ -86,11 +89,11 @@ class WebpackCdnPlugin {
 
     compiler.options.externals = externals;
 
-    if (this.prod && this.crossOrigin) {
+    if (this.prod && (this.crossOrigin || this.sri)) {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
         compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
           compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
+            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapPromise(
               'WebpackCdnPlugin',
               this.alterAssetTags.bind(this),
             );
@@ -100,19 +103,34 @@ class WebpackCdnPlugin {
     }
   }
 
-  alterAssetTags(pluginArgs, callback) {
+  async alterAssetTags(pluginArgs) {
     const filterTag = (tag) => {
       const prefix = this.url.split('/:')[0];
       const url = (tag.tagName === 'script' && tag.attributes.src)
         || (tag.tagName === 'link' && tag.attributes.href);
       return url && url.indexOf(prefix) === 0;
     };
-    const processTag = (tag) => {
-      tag.attributes.crossorigin = this.crossOrigin;
+    const processTag = async (tag) => {
+      if (this.crossOrigin) {
+        tag.attributes.crossorigin = this.crossOrigin;
+      }
+      if (this.sri) {
+        let url;
+        if (tag.tagName === 'link') {
+          url = tag.attributes.href;
+        }
+        if (tag.tagName === 'script') {
+          url = tag.attributes.src;
+        }
+        try {
+          tag.attributes.integrity = await createSri(url);
+        } catch (e) {
+          throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
+        }
+      }
     };
-    pluginArgs.head.filter(filterTag).forEach(processTag);
-    pluginArgs.body.filter(filterTag).forEach(processTag);
-    callback(null, pluginArgs);
+    await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
+    await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
   }
 
   /**

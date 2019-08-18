@@ -249,6 +249,10 @@ Set to `true` to ignore every module not actually required in your bundle.
 
 Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` or `"use-credentials"`, to configure the CORS requests for the element's fetched data. Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes) for more information.
 
+##### `sri`:`boolean` | `false`
+
+Adds a Subresource Integrity (SRI) hash in the integrity attribute when generating tags for static files. See [MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) for more information.
+
 ##### `pathToNodeModules?: string` (optional)
 
 Path to the `node_modules` folder to "serve" packages from. This is used to determinate what version to request for packages from the CDN.
