@@ -5,7 +5,7 @@ const WebpackCdnPlugin = require('../module');
 const createSri = require('sri-create');
 
 const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
-const jsMatcher = /<script type="text\/javascript" src="(.+?)"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
+const jsMatcher = /<script type="text\/javascript" src="([^"]+?)"( crossorigin="anonymous")?( integrity="sha[^"]+")?>/g;
 
 let cssAssets;
 let jsAssets;
