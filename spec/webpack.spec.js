@@ -119,29 +119,11 @@ function getConfig({
     },
     { name: 'jasmine', cdn: 'jasmine2', style: 'style.css' },
   ];
-  if (sri) {
-    if (sri === 'jasmine') {
-      if (moduleProdUrl) {
-        modules = [
-          { name: 'jasmine', path: 'lib/jasmine.js' }
-        ];
-      } else {
-        modules = [
-          { name: 'jasmine', path: 'lib/jasmine.js' },
-          { name: 'bootstrap-css-only', style: 'css/bootstrap-grid.css', cssOnly: true },
-        ];
-      }
-    } else {
-      modules = [
-        { name: 'jasmine', path: 'notfound.js' },
-      ];
-    }
-  }
   if (moduleProdUrl) {
-    modules[modules.length-1].prodUrl = moduleProdUrl;
+    modules[2].prodUrl = moduleProdUrl;
   }
   if (moduleDevUrl) {
-    modules[modules.length-1].devUrl = moduleDevUrl;
+    modules[2].devUrl = moduleDevUrl;
   }
   if (multiple) {
     modules = {
@@ -174,6 +156,19 @@ function getConfig({
         styles: ['style2.css'],
       },
     ];
+  }
+
+  if (sri) {
+    if (sri === 'jasmine') {
+      modules = [
+      { name: 'jasmine', path: 'lib/jasmine.js' },
+      { name: 'bootstrap-css-only', style: 'css/bootstrap-grid.css', cssOnly: true },
+      ];
+    } else {
+      modules = [
+      { name: 'jasmine', path: 'notfound.js' },
+      ];
+    }
   }
   const options = {
     modules,
@@ -290,27 +285,6 @@ describe('Webpack Integration', () => {
           }/index.js`,
           `//cdnjs.cloudflare.com/ajax/libs/nyc/${versions.nyc}/index.js`,
           `//cdn.jsdelivr.net/npm/jasmine2@${versions.jasmine}/lib/jasmine.js`,
-          '/assets/app.js',
-        ]);
-      });
-    });
-
-    describe('When module `prodUrl` and `sri` are set', () => {
-      beforeAll((done) => {
-        runWebpack(
-          done,
-          getConfig({
-            prod: true,
-            sri: 'jasmine',
-            prodUrl: 'https://cdnjs.cloudflare.com/ajax/libs/:name/:version/:path',
-            moduleProdUrl: 'https://cdn.jsdelivr.net/npm/:name@:version/:path',
-          }),
-        );
-      });
-
-      it('should output the right assets (js)', () => {
-        expect(jsAssets).toEqual([
-          `https://cdn.jsdelivr.net/npm/jasmine@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
         ]);
       });
