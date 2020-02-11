@@ -52,18 +52,18 @@
   },
   "homepage": "https://github.com/shirotech/webpack-cdn-plugin",
   "devDependencies": {
-    "archy": "^1.0.0",
-    "eslint": "5.16.0",
-    "eslint-config-airbnb-base": "13.1.0",
-    "eslint-plugin-import": "^2.17.3",
-    "html-webpack-plugin": "^3.2.0",
-    "husky": "^2.4.1",
-    "jasmine": "^3.4.0",
-    "jasmine-spec-reporter": "^4.2.1",
-    "nyc": "^14.1.1",
-    "validate-commit-msg": "^2.14.0",
-    "webpack": "4.33.0",
-    "webpack-cli": "^3.3.4"
+    "archy": "1.0.0",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-plugin-import": "2.20.1",
+    "html-webpack-plugin": "3.2.0",
+    "husky": "4.2.1",
+    "jasmine": "3.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "nyc": "15.0.0",
+    "validate-commit-msg": "2.14.0",
+    "webpack": "4.41.6",
+    "webpack-cli": "3.3.10"
   },
   "peerDependencies": {
     "html-webpack-plugin": ">=3"
