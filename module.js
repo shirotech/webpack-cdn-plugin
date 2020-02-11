@@ -104,21 +104,12 @@ class WebpackCdnPlugin {
   }
 
   async alterAssetTags(pluginArgs) {
-    const getProdUrlPrefixes = () => {
-      const urls = this.modules[Reflect.ownKeys(this.modules)[0]]
-        .filter(m => m.prodUrl).map(m => m.prodUrl);
-      urls.push(this.url);
-      return [...new Set(urls)].map(url => url.split('/:')[0]);
-    };
-
-    const prefixes = getProdUrlPrefixes();
-
     const filterTag = (tag) => {
+      const prefix = this.url.split('/:')[0];
       const url = (tag.tagName === 'script' && tag.attributes.src)
         || (tag.tagName === 'link' && tag.attributes.href);
-      return url && prefixes.filter(prefix => url.indexOf(prefix) === 0).length !== 0;
+      return url && url.indexOf(prefix) === 0;
     };
-
     const processTag = async (tag) => {
       if (this.crossOrigin) {
         tag.attributes.crossorigin = this.crossOrigin;
