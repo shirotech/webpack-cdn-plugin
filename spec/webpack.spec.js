@@ -309,10 +309,6 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (js)', () => {
-        expect(jsSri).toEqual(['sha384-GVSvp94Rbje0r89j7JfSj0QfDdJ9BkFy7YUaUZUgKNc4R6ibqFHWgv+eD1oufzAu']);
-      });
-
-      it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual([
           `https://cdn.jsdelivr.net/npm/jasmine@${versions.jasmine}/lib/jasmine.js`,
           '/assets/app.js',
