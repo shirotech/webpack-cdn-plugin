@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const empty = '';
 const slash = '/';
@@ -47,7 +48,13 @@ class WebpackCdnPlugin {
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
-      compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
+      let tagGeneration = HtmlWebpackPlugin.getHook(
+        compilation).beforeAssetTagGeneration;
+      if (typeof tagGeneration !== 'undefined') {
+        tagGeneration = HtmlWebpackPlugin.getHook(
+          compilation).htmlWebpackPluginBeforeHtmlGeneration;
+      }
+      tagGeneration.tapAsync(
         'WebpackCdnPlugin',
         (data, callback) => {
           const moduleId = data.plugin.options.cdnModule;
