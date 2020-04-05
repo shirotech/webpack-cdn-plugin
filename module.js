@@ -59,12 +59,12 @@ class WebpackCdnPlugin {
             if (modules) {
               if (this.optimize) {
                 const usedModules = WebpackCdnPlugin._getUsedModules(compilation);
-                modules = modules.filter(p => usedModules[p.name]);
+                modules = modules.filter((p) => usedModules[p.name]);
               }
 
               WebpackCdnPlugin._cleanModules(modules, this.pathToNodeModules);
 
-              modules = modules.filter(module => module.version);
+              modules = modules.filter((module) => module.version);
 
               data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
@@ -81,7 +81,7 @@ class WebpackCdnPlugin {
     Reflect.ownKeys(this.modules).forEach((key) => {
       const mods = this.modules[key];
       mods
-        .filter(m => !m.cssOnly)
+        .filter((m) => !m.cssOnly)
         .forEach((p) => {
           externals[p.name] = p.var || p.name;
         });
@@ -106,9 +106,9 @@ class WebpackCdnPlugin {
   async alterAssetTags(pluginArgs) {
     const getProdUrlPrefixes = () => {
       const urls = this.modules[Reflect.ownKeys(this.modules)[0]]
-        .filter(m => m.prodUrl).map(m => m.prodUrl);
+        .filter((m) => m.prodUrl).map((m) => m.prodUrl);
       urls.push(this.url);
-      return [...new Set(urls)].map(url => url.split('/:')[0]);
+      return [...new Set(urls)].map((url) => url.split('/:')[0]);
     };
 
     const prefixes = getProdUrlPrefixes();
@@ -116,7 +116,7 @@ class WebpackCdnPlugin {
     const filterTag = (tag) => {
       const url = (tag.tagName === 'script' && tag.attributes.src)
         || (tag.tagName === 'link' && tag.attributes.href);
-      return url && prefixes.filter(prefix => url.indexOf(prefix) === 0).length !== 0;
+      return url && prefixes.filter((prefix) => url.indexOf(prefix) === 0).length !== 0;
     };
 
     const processTag = async (tag) => {
@@ -247,12 +247,12 @@ class WebpackCdnPlugin {
 
     const files = [];
 
-    modules.filter(p => p[localKey]).forEach(p => files.push(publicPath + p[localKey]));
+    modules.filter((p) => p[localKey]).forEach((p) => files.push(publicPath + p[localKey]));
 
-    modules.filter(p => p[pathsKey].length > 0)
+    modules.filter((p) => p[pathsKey].length > 0)
       .forEach((p) => {
         const moduleSpecificUrl = (prod ? p.prodUrl : p.devUrl);
-        p[pathsKey].forEach(s => files.push(
+        p[pathsKey].forEach((s) => files.push(
           prefix + (moduleSpecificUrl || url).replace(paramsRegex, (m, p1) => {
             if (prod && p.cdn && p1 === 'name') {
               return p.cdn;

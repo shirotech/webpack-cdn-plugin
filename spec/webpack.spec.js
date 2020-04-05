@@ -416,7 +416,7 @@ describe('Webpack Integration', () => {
       });
 
       it('should output the right assets (css)', () => {
-        expect(cssSri).toEqual(['sha384-5XWkC0mfBIMmreqUtfTPBSrK5ez30uvDZF1gDjKmnDC7DOA+u8MKCcYFB2AhR7VT']);
+        expect(cssSri).toEqual(['sha384-2c0TqAkCN1roP60Rv0mi/hGc4f/Wcgf55C348nsOdphbp3YncSDjfSLBTO/IbRVh']);
       });
     });
 
