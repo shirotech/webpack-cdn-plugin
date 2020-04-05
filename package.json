@@ -5,7 +5,7 @@
   "main": "module.js",
   "module": "module.js",
   "scripts": {
-    "lint": "eslint module.js",
+    "lint": "eslint module.js spec/",
     "test": "npm run lint && nyc jasmine",
     "commitmsg": "validate-commit-msg",
     "precommit": "npm test",
