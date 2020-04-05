@@ -6,6 +6,9 @@ const empty = '';
 const slash = '/';
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
+const assetEmptyPrefix = /^\.\//;
+const backSlashes = /\\/g;
+const nodeModulesRegex = /[\\/]node_modules[\\/].+?[\\/](.*)/;
 const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 
 class WebpackCdnPlugin {
@@ -33,7 +36,7 @@ class WebpackCdnPlugin {
   apply(compiler) {
     const { output } = compiler.options;
     if (this.prefix === empty) {
-      output.publicPath = empty;
+      output.publicPath = './';
     } else {
       output.publicPath = output.publicPath || '/';
 
@@ -67,16 +70,15 @@ class WebpackCdnPlugin {
 
               modules = modules.filter((module) => module.version);
 
-              if (output.publicPath === empty) {
-                data.assets.js.forEach((item, i) => {
-                  data.assets.js[i] = data.assets.js[i].replace(data.assets.publicPath, empty);
-                });
-              }
-
               data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
                 data.assets.css,
               );
+
+              if (this.prefix === empty) {
+                WebpackCdnPlugin._assetNormalize(data.assets.js);
+                WebpackCdnPlugin._assetNormalize(data.assets.css);
+              }
             }
           }
           callback(null, data);
@@ -146,8 +148,7 @@ class WebpackCdnPlugin {
       }
     };
 
-    /* istanbul ignore if */
-    /* istanbul ignore else */
+    /* istanbul ignore next */
     if (pluginArgs.assetTags) {
       await Promise.all(pluginArgs.assetTags.scripts.filter(filterTag).map(processTag));
       await Promise.all(pluginArgs.assetTags.styles.filter(filterTag).map(processTag));
@@ -222,8 +223,8 @@ class WebpackCdnPlugin {
         p.paths.push(
           require
             .resolve(p.name)
-            .match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1]
-            .replace(/\\/g, '/'),
+            .match(nodeModulesRegex)[1]
+            .replace(backSlashes, slash),
         );
       }
 
@@ -279,6 +280,12 @@ class WebpackCdnPlugin {
       });
 
     return files;
+  }
+
+  static _assetNormalize(assets) {
+    assets.forEach((item, i) => {
+      assets[i] = assets[i].replace(assetEmptyPrefix, empty);
+    });
   }
 
   static _getHtmlHook(compilation, v4Name, v3Name) {
