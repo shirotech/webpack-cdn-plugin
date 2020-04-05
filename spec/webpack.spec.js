@@ -2,10 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackCdnPlugin = require('../module');
-const createSri = require('sri-create');
 
-const cssMatcher = /<link href="(.+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.+")?>/g;
-const jsMatcher = /<script type="text\/javascript" src="([^"]+?)"( crossorigin="anonymous")?( integrity="sha[^"]+")?>/g;
+const cssMatcher = /<link href="([^"]+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.[^"]+?")?>/g;
+const jsMatcher = /<script(?: type="text\/javascript")? src="([^"]+?)"( crossorigin="anonymous")?( integrity="sha[^"]+?")?>/g;
 
 let cssAssets;
 let jsAssets;
@@ -52,7 +51,9 @@ function runWebpack(callback, config) {
     const html = stats.compilation.assets['../index.html'].source();
     const html2 = stats.compilation.assets['../index2.html'].source();
 
-    let matches, sriMatches;
+    let matches;
+    let sriMatches;
+
     while ((matches = cssMatcher.exec(html))) {
       cssAssets.push(matches[1]);
       cssCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
@@ -109,7 +110,7 @@ function getConfig({
     output.publicPath = publicPath2;
   }
 
-  var modules = [
+  let modules = [
     { name: 'jasmine-spec-reporter', path: 'index.js' },
     {
       name: 'nyc',
@@ -123,7 +124,7 @@ function getConfig({
     if (sri === 'jasmine') {
       if (moduleProdUrl) {
         modules = [
-          { name: 'jasmine', path: 'lib/jasmine.js' }
+          { name: 'jasmine', path: 'lib/jasmine.js' },
         ];
       } else {
         modules = [
@@ -138,10 +139,10 @@ function getConfig({
     }
   }
   if (moduleProdUrl) {
-    modules[modules.length-1].prodUrl = moduleProdUrl;
+    modules[modules.length - 1].prodUrl = moduleProdUrl;
   }
   if (moduleDevUrl) {
-    modules[modules.length-1].devUrl = moduleDevUrl;
+    modules[modules.length - 1].devUrl = moduleDevUrl;
   }
   if (multiple) {
     modules = {
@@ -429,7 +430,6 @@ describe('Webpack Integration', () => {
         expect(jsSri).toEqual([]);
       });
     });
-
   });
 
   describe('When `prod` is false', () => {
@@ -521,7 +521,7 @@ describe('Webpack Integration', () => {
       beforeAll((done) => {
         runWebpack(done, getConfig({
           prod: false,
-          moduleDevUrl: ":name/dist/:path",
+          moduleDevUrl: ':name/dist/:path',
         }));
       });
 

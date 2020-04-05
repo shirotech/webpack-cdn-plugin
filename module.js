@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const createSri = require('sri-create');
 
 const empty = '';
@@ -50,7 +51,7 @@ class WebpackCdnPlugin {
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
-      compilation.hooks.htmlWebpackPluginBeforeHtmlGeneration.tapAsync(
+      WebpackCdnPlugin._getHtmlHook(compilation, 'beforeAssetTagGeneration', 'htmlWebpackPluginBeforeHtmlGeneration').tapAsync(
         'WebpackCdnPlugin',
         (data, callback) => {
           const moduleId = data.plugin.options.cdnModule;
@@ -65,6 +66,12 @@ class WebpackCdnPlugin {
               WebpackCdnPlugin._cleanModules(modules, this.pathToNodeModules);
 
               modules = modules.filter((module) => module.version);
+
+              if (output.publicPath === empty) {
+                data.assets.js.forEach((item, i) => {
+                  data.assets.js[i] = data.assets.js[i].replace(data.assets.publicPath, empty);
+                });
+              }
 
               data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
@@ -93,7 +100,7 @@ class WebpackCdnPlugin {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
         compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
           compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapPromise(
+            WebpackCdnPlugin._getHtmlHook(compilation, 'alterAssetTags', 'htmlWebpackPluginAlterAssetTags').tapPromise(
               'WebpackCdnPlugin',
               this.alterAssetTags.bind(this),
             );
@@ -138,8 +145,16 @@ class WebpackCdnPlugin {
         }
       }
     };
-    await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
-    await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
+
+    /* istanbul ignore if */
+    /* istanbul ignore else */
+    if (pluginArgs.assetTags) {
+      await Promise.all(pluginArgs.assetTags.scripts.filter(filterTag).map(processTag));
+      await Promise.all(pluginArgs.assetTags.styles.filter(filterTag).map(processTag));
+    } else {
+      await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
+      await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
+    }
   }
 
   /**
@@ -264,6 +279,16 @@ class WebpackCdnPlugin {
       });
 
     return files;
+  }
+
+  static _getHtmlHook(compilation, v4Name, v3Name) {
+    try {
+      /* istanbul ignore next */
+      return HtmlWebpackPlugin.getHooks(compilation)[v4Name] || compilation.hooks[v3Name];
+    } catch (e) {
+      /* istanbul ignore next */
+      return compilation.hooks[v3Name];
+    }
   }
 }
 
