@@ -122,6 +122,7 @@ class WebpackCdnPlugin {
 
     const prefixes = getProdUrlPrefixes();
 
+    const alteredAssetTags = [];
     const filterTag = (tag) => {
       const url = (tag.tagName === 'script' && tag.attributes.src)
         || (tag.tagName === 'link' && tag.attributes.href);
@@ -146,6 +147,28 @@ class WebpackCdnPlugin {
           throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
         }
       }
+      alteredAssetTags.push(tag);
+    };
+
+    const preloadAlteredAssetTags = (pluginArgs, tags) => {
+      Array.prototype.unshift.apply(
+        pluginArgs.head,
+        tags
+          .filter(tag => (tag.attributes.href || tag.attributes.src))
+          .map(tag => {
+            return {
+              tagName: 'link',
+              selfClosingTag: !!pluginArgs.plugin.options.xhtml,
+              attributes: {
+                rel: 'preload',
+                href: (tag.attributes.href || tag.attributes.src),
+                crossorigin: tag.attributes.crossorigin,
+                as: (tag.tagName === 'script' && 'script')
+                    || (tag.tagName === 'link' && tag.attributes.rel == 'stylesheet' && 'style')
+              }
+            };
+          })
+        );
     };
 
     /* istanbul ignore next */
@@ -155,6 +178,10 @@ class WebpackCdnPlugin {
     } else {
       await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
       await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
+    }
+
+    if (pluginArgs.plugin.options.preload !== false) {
+      preloadAlteredAssetTags(pluginArgs, alteredAssetTags);
     }
   }
 
