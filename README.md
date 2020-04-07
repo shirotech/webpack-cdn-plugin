@@ -253,6 +253,10 @@ Allows you to specify a custom `crossorigin` attribute of either `"anonymous"` o
 
 Adds a Subresource Integrity (SRI) hash in the integrity attribute when generating tags for static files. See [MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) for more information.
 
+##### `preload`:`boolean` | `false`
+
+Adds a `<link rel="preload">` tag for each static file. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) for more information.
+
 ##### `pathToNodeModules?: string` (optional)
 
 Path to the `node_modules` folder to "serve" packages from. This is used to determinate what version to request for packages from the CDN.

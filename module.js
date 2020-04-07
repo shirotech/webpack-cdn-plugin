@@ -21,6 +21,7 @@ class WebpackCdnPlugin {
     optimize = false,
     crossOrigin = false,
     sri = false,
+    preload = false,
     pathToNodeModules = process.cwd(),
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
@@ -30,6 +31,7 @@ class WebpackCdnPlugin {
     this.optimize = optimize;
     this.crossOrigin = crossOrigin;
     this.sri = sri;
+    this.preload = preload !== false;
     this.pathToNodeModules = pathToNodeModules;
   }
 
@@ -150,25 +152,23 @@ class WebpackCdnPlugin {
       alteredAssetTags.push(tag);
     };
 
-    const preloadAlteredAssetTags = (pluginArgs, tags) => {
+    const preloadAlteredAssetTags = (args, tags) => {
       Array.prototype.unshift.apply(
-        pluginArgs.head,
+        args.head,
         tags
-          .filter(tag => (tag.attributes.href || tag.attributes.src))
-          .map(tag => {
-            return {
-              tagName: 'link',
-              selfClosingTag: !!pluginArgs.plugin.options.xhtml,
-              attributes: {
-                rel: 'preload',
-                href: (tag.attributes.href || tag.attributes.src),
-                crossorigin: tag.attributes.crossorigin,
-                as: (tag.tagName === 'script' && 'script')
-                    || (tag.tagName === 'link' && tag.attributes.rel == 'stylesheet' && 'style')
-              }
-            };
-          })
-        );
+          .filter((tag) => (tag.attributes.href || tag.attributes.src))
+          .map((tag) => ({
+            tagName: 'link',
+            selfClosingTag: !!args.plugin.options.xhtml,
+            attributes: {
+              rel: 'preload',
+              href: (tag.attributes.href || tag.attributes.src),
+              crossorigin: tag.attributes.crossorigin,
+              as: (tag.tagName === 'script' && 'script')
+                  || (tag.tagName === 'link' && tag.attributes.rel === 'stylesheet' && 'style'),
+            },
+          })),
+      );
     };
 
     /* istanbul ignore next */
@@ -180,7 +180,7 @@ class WebpackCdnPlugin {
       await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
     }
 
-    if (pluginArgs.plugin.options.preload !== false) {
+    if (this.preload && pluginArgs.plugin.options.preload !== false) {
       preloadAlteredAssetTags(pluginArgs, alteredAssetTags);
     }
   }

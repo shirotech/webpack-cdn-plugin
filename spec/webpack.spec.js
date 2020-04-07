@@ -3,8 +3,11 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackCdnPlugin = require('../module');
 
-const cssMatcher = /<link href="([^"]+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.[^"]+?")?>/g;
-const jsMatcher = /<script(?: type="text\/javascript")? src="([^"]+?)"( crossorigin="anonymous")?( integrity="sha[^"]+?")?>/g;
+const cssAssetMatcher = /<link href="([^"]+?.css)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.[^"]+?")?>/g;
+const jsAssetMatcher = /<script(?: type="text\/javascript")? src="([^"]+?.js)"( crossorigin="anonymous")?( integrity="sha[^"]+?")?>/g;
+
+const cssPreloadMatcher = /<link rel="preload" href="([^"]+?.css)"( crossorigin="anonymous")? as="style">/g;
+const jsPreloadMatcher = /<link rel="preload" href="([^"]+?.js)"( crossorigin="anonymous")? as="script">/g;
 
 let cssAssets;
 let jsAssets;
@@ -18,6 +21,10 @@ let cssCrossOrigin;
 let jsCrossOrigin;
 let cssCrossOrigin2;
 let jsCrossOrigin2;
+let cssPreload;
+let jsPreload;
+let cssPreload2;
+let jsPreload2;
 
 const versions = {
   jasmine: WebpackCdnPlugin.getVersionInNodeModules('jasmine'),
@@ -43,6 +50,10 @@ function runWebpack(callback, config) {
   jsCrossOrigin = [];
   cssCrossOrigin2 = [];
   jsCrossOrigin2 = [];
+  cssPreload = [];
+  jsPreload = [];
+  cssPreload2 = [];
+  jsPreload2 = [];
 
   const compiler = webpack(config);
   compiler.outputFileSystem = fs;
@@ -54,14 +65,14 @@ function runWebpack(callback, config) {
     let matches;
     let sriMatches;
 
-    while ((matches = cssMatcher.exec(html))) {
+    while ((matches = cssAssetMatcher.exec(html))) {
       cssAssets.push(matches[1]);
       cssCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
       if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
         cssSri.push(sriMatches[1]);
       }
     }
-    while ((matches = cssMatcher.exec(html2))) {
+    while ((matches = cssAssetMatcher.exec(html2))) {
       cssAssets2.push(matches[1]);
       cssCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
       if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
@@ -69,19 +80,33 @@ function runWebpack(callback, config) {
       }
     }
 
-    while ((matches = jsMatcher.exec(html))) {
+    while ((matches = jsAssetMatcher.exec(html))) {
       jsAssets.push(matches[1]);
       jsCrossOrigin.push(/crossorigin="anonymous"/.test(matches[2]));
       if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
         jsSri.push(sriMatches[1]);
       }
     }
-    while ((matches = jsMatcher.exec(html2))) {
+    while ((matches = jsAssetMatcher.exec(html2))) {
       jsAssets2.push(matches[1]);
       jsCrossOrigin2.push(/crossorigin="anonymous"/.test(matches[2]));
       if (sriMatches = /integrity="(sha[^"]+)"/.exec(matches[3])) {
         jsSri2.push(sriMatches[1]);
       }
+    }
+
+    while ((matches = cssPreloadMatcher.exec(html))) {
+      cssPreload.push(/rel="preload"/.test(matches[2]) && /as="style"/.test(matches[2]));
+    }
+    while ((matches = cssPreloadMatcher.exec(html2))) {
+      cssPreload2.push(/rel="preload"/.test(matches[2]) && /as="style"/.test(matches[2]));
+    }
+
+    while ((matches = jsPreloadMatcher.exec(html))) {
+      jsPreload.push(/rel="preload"/.test(matches[2]) && /as="script"/.test(matches[2]));
+    }
+    while ((matches = jsPreloadMatcher.exec(html2))) {
+      jsPreload2.push(/rel="preload"/.test(matches[2]) && /as="script"/.test(matches[2]));
     }
 
     callback();
@@ -100,6 +125,7 @@ function getConfig({
   optimize,
   crossOrigin,
   sri,
+  preload,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -183,6 +209,7 @@ function getConfig({
     optimize,
     crossOrigin,
     sri,
+    preload,
   };
 
   if (publicPath !== undefined) {
@@ -428,6 +455,20 @@ describe('Webpack Integration', () => {
 
       it('should trigger exception (js)', () => {
         expect(jsSri).toEqual([]);
+      });
+    });
+
+    describe('When `preload` is set', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, preload: true }));
+      });
+
+      it('should output the right assets preload (css)', () => {
+        expect(cssPreload).toEqual([false, true, true]);
+      });
+
+      it('should output the right assets preload (js)', () => {
+        expect(jsPreload).toEqual([false, true, true, true, false]);
       });
     });
   });
