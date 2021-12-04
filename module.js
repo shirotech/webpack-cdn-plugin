@@ -1,10 +1,14 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const createSri = require('sri-create');
 
 const empty = '';
 const slash = '/';
 const packageJson = 'package.json';
 const paramsRegex = /:([a-z]+)/gi;
+const assetEmptyPrefix = /^\.\//;
+const backSlashes = /\\/g;
+const nodeModulesRegex = /[\\/]node_modules[\\/].+?[\\/](.*)/;
 const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
 
 class WebpackCdnPlugin {
@@ -16,6 +20,7 @@ class WebpackCdnPlugin {
     publicPath,
     optimize = false,
     crossOrigin = false,
+    sri = false,
     pathToNodeModules = process.cwd(),
   }) {
     this.modules = Array.isArray(modules) ? { [DEFAULT_MODULE_KEY]: modules } : modules;
@@ -24,13 +29,14 @@ class WebpackCdnPlugin {
     this.url = this.prod ? prodUrl : devUrl;
     this.optimize = optimize;
     this.crossOrigin = crossOrigin;
+    this.sri = sri;
     this.pathToNodeModules = pathToNodeModules;
   }
 
   apply(compiler) {
     const { output } = compiler.options;
     if (this.prefix === empty) {
-      output.publicPath = empty;
+      output.publicPath = './';
     } else {
       output.publicPath = output.publicPath || '/';
 
@@ -48,13 +54,7 @@ class WebpackCdnPlugin {
     const getArgs = [this.url, this.prefix, this.prod, output.publicPath];
 
     compiler.hooks.compilation.tap('WebpackCdnPlugin', (compilation) => {
-      let tagGeneration = HtmlWebpackPlugin.getHooks(
-        compilation).beforeAssetTagGeneration;
-      if (typeof tagGeneration === 'undefined') {
-        tagGeneration = HtmlWebpackPlugin.getHooks(
-          compilation).htmlWebpackPluginBeforeHtmlGeneration;
-      }
-      tagGeneration.tapAsync(
+      WebpackCdnPlugin._getHtmlHook(compilation, 'beforeAssetTagGeneration', 'htmlWebpackPluginBeforeHtmlGeneration').tapAsync(
         'WebpackCdnPlugin',
         (data, callback) => {
           const moduleId = data.plugin.options.cdnModule;
@@ -74,6 +74,11 @@ class WebpackCdnPlugin {
               data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
                 data.assets.css,
               );
+
+              if (this.prefix === empty) {
+                WebpackCdnPlugin._assetNormalize(data.assets.js);
+                WebpackCdnPlugin._assetNormalize(data.assets.css);
+              }
             }
           }
           callback(null, data);
@@ -93,11 +98,11 @@ class WebpackCdnPlugin {
 
     compiler.options.externals = externals;
 
-    if (this.prod && this.crossOrigin) {
+    if (this.prod && (this.crossOrigin || this.sri)) {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
         compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
           compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-            compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
+            WebpackCdnPlugin._getHtmlHook(compilation, 'alterAssetTags', 'htmlWebpackPluginAlterAssetTags').tapPromise(
               'WebpackCdnPlugin',
               this.alterAssetTags.bind(this),
             );
@@ -107,19 +112,50 @@ class WebpackCdnPlugin {
     }
   }
 
-  alterAssetTags(pluginArgs, callback) {
+  async alterAssetTags(pluginArgs) {
+    const getProdUrlPrefixes = () => {
+      const urls = this.modules[Reflect.ownKeys(this.modules)[0]]
+        .filter((m) => m.prodUrl).map((m) => m.prodUrl);
+      urls.push(this.url);
+      return [...new Set(urls)].map((url) => url.split('/:')[0]);
+    };
+
+    const prefixes = getProdUrlPrefixes();
+
     const filterTag = (tag) => {
-      const prefix = this.url.split('/:')[0];
       const url = (tag.tagName === 'script' && tag.attributes.src)
         || (tag.tagName === 'link' && tag.attributes.href);
-      return url && url.indexOf(prefix) === 0;
+      return url && prefixes.filter((prefix) => url.indexOf(prefix) === 0).length !== 0;
     };
-    const processTag = (tag) => {
-      tag.attributes.crossorigin = this.crossOrigin;
+
+    const processTag = async (tag) => {
+      if (this.crossOrigin) {
+        tag.attributes.crossorigin = this.crossOrigin;
+      }
+      if (this.sri) {
+        let url;
+        if (tag.tagName === 'link') {
+          url = tag.attributes.href;
+        }
+        if (tag.tagName === 'script') {
+          url = tag.attributes.src;
+        }
+        try {
+          tag.attributes.integrity = await createSri(url);
+        } catch (e) {
+          throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
+        }
+      }
     };
-    pluginArgs.head.filter(filterTag).forEach(processTag);
-    pluginArgs.body.filter(filterTag).forEach(processTag);
-    callback(null, pluginArgs);
+
+    /* istanbul ignore next */
+    if (pluginArgs.assetTags) {
+      await Promise.all(pluginArgs.assetTags.scripts.filter(filterTag).map(processTag));
+      await Promise.all(pluginArgs.assetTags.styles.filter(filterTag).map(processTag));
+    } else {
+      await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
+      await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
+    }
   }
 
   /**
@@ -187,8 +223,8 @@ class WebpackCdnPlugin {
         p.paths.push(
           require
             .resolve(p.name)
-            .match(/[\\/]node_modules[\\/].+?[\\/](.*)/)[1]
-            .replace(/\\/g, '/'),
+            .match(nodeModulesRegex)[1]
+            .replace(backSlashes, slash),
         );
       }
 
@@ -244,6 +280,22 @@ class WebpackCdnPlugin {
       });
 
     return files;
+  }
+
+  static _assetNormalize(assets) {
+    assets.forEach((item, i) => {
+      assets[i] = assets[i].replace(assetEmptyPrefix, empty);
+    });
+  }
+
+  static _getHtmlHook(compilation, v4Name, v3Name) {
+    try {
+      /* istanbul ignore next */
+      return HtmlWebpackPlugin.getHooks(compilation)[v4Name] || compilation.hooks[v3Name];
+    } catch (e) {
+      /* istanbul ignore next */
+      return compilation.hooks[v3Name];
+    }
   }
 }
 
