@@ -114,7 +114,6 @@ class WebpackCdnPlugin {
           externals = this.updateExternalsIfNot(externals, p);
         });
     });
-
     compiler.options.externals = externals;
 
 
@@ -182,7 +181,6 @@ class WebpackCdnPlugin {
    * update webpack externals option
    */
   updateExternalsIfNot(externals, moduleEntry) {
-    
     let updateExternal = false
     if (Array.isArray(externals)) {
       const self = this;
@@ -204,16 +202,7 @@ class WebpackCdnPlugin {
       }
     } else {
       const keys = Reflect.ownKeys(externals);
-      const idx = keys.findIndex(key => {
-          let match 
-          if (key !== 'byLayer') {
-            match = this.matchExternal(externals[key], moduleEntry);
-          } else {
-            // you should not update external option
-            match = true
-          }
-          return match
-      });
+      const idx = keys.findIndex(key => key == moduleEntry.name);
       updateExternal = idx < 0;
     }
     if (updateExternal) {
@@ -223,7 +212,7 @@ class WebpackCdnPlugin {
         extEntry[moduleEntry.name] = modName;
 	      externals.push(extEntry);
       } else if (typeof externals === 'object') {
-        externals[moduleEntry.name] = modeName;
+        externals[moduleEntry.name] = modName;
       }
     }
     return externals;
@@ -245,6 +234,7 @@ class WebpackCdnPlugin {
       result = moduleEntry.name in extEntry;
     }
     return result
+   
   }
 
   
