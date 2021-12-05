@@ -85,18 +85,38 @@ class WebpackCdnPlugin {
         },
       );
     });
-    const externals = compiler.options.externals || {};
+    // I would like to make this plugin having an option for 
+    // forcing updating externals.  
+    // like this
+    //
+    // code:
+    // if (moduleEntry.var) {
+    //   Reflect.ownKeys(this.modules).forEach((key) => {
+    //     const mods = this.modules[key];
+    //     mods
+    //       .filter((m) => !m.cssOnly)
+    //       .forEach((p) => {
+    //          this.updateExternalsIfNot(externals, p);
+    //    });
+    // });
+    // README.md
+    // `var`:`string` (optional)
+    // A variable that will be assigned to the module in global scope, webpack requires this. This option updates webpack externals configuration, if supplied. 
 
+
+    
+    let externals = compiler.options.externals || {};
     Reflect.ownKeys(this.modules).forEach((key) => {
       const mods = this.modules[key];
       mods
         .filter((m) => !m.cssOnly)
         .forEach((p) => {
-          externals[p.name] = p.var || p.name;
+          externals = this.updateExternalsIfNot(externals, p);
         });
     });
 
     compiler.options.externals = externals;
+
 
     if (this.prod && (this.crossOrigin || this.sri)) {
       compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
@@ -157,6 +177,77 @@ class WebpackCdnPlugin {
       await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
     }
   }
+
+  /**
+   * update webpack externals option
+   */
+  updateExternalsIfNot(externals, moduleEntry) {
+    
+    let updateExternal = false
+    if (Array.isArray(externals)) {
+      const self = this;
+      const extEntry = externals.find(
+        elm => self.matchExternal(elm, moduleEntry));
+      updateExternal = typeof extEntry === 'undefined'
+    } else if (typeof externals === 'function') {
+      // you should not update external option 
+      updateExternal = false; 
+    } else if (typeof externals === 'string') {
+      if (!this.matchExternal(externals, moduleEntry)) {
+        externals = [ externals ];
+        updateExternal = true;
+      } 
+    } else if (externals instanceof RegExp) {
+      if (!this.matchExternal(externals, moduleEntry)) {
+        externals = [ externals ];
+        updateExternal = true;
+      }
+    } else {
+      const keys = Reflect.ownKeys(externals);
+      const idx = keys.findIndex(key => {
+          let match 
+          if (key !== 'byLayer') {
+            match = this.matchExternal(externals[key], moduleEntry);
+          } else {
+            // you should not update external option
+            match = true
+          }
+          return match
+      });
+      updateExternal = idx < 0;
+    }
+    if (updateExternal) {
+      const modName = moduleEntry.var || moduleEntry.name;
+      if (Array.isArray(externals)) {
+        const extEntry = {};
+        extEntry[moduleEntry.name] = modName;
+	      externals.push(extEntry);
+      } else if (typeof externals === 'object') {
+        externals[moduleEntry.name] = modeName;
+      }
+    }
+    return externals;
+  }
+
+  /**
+   * you get true if extEntry has moduleEntry already.
+   */
+  matchExternal(extEntry, moduleEntry) {
+    let result = false
+    if (extEntry instanceof RegExp) {
+      result = moduleEntry.name.match(extEntry) 
+    } else if (typeof extEntry === 'function') {
+      // You should not append external entry
+      result = true
+    } else if (typeof extEntry === 'string') {
+      result = extEntry == moduleEntry.name;
+    } else if (typeof extEntry === 'object') {
+      result = moduleEntry.name in extEntry;
+    }
+    return result
+  }
+
+  
 
   /**
    * Returns the version of a package in the root of the `node_modules` folder.
