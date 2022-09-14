@@ -258,7 +258,9 @@ Adds a Subresource Integrity (SRI) hash in the integrity attribute when generati
 Path to the `node_modules` folder to "serve" packages from. This is used to determinate what version to request for packages from the CDN.
 
 If not provided, the value returned by `process.cwd()` is used.
+##### `preload`:`boolean` | `false`
 
+Adds a `<link rel="preload">` tag for each static file. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) for more information.
 ### Contribution
 
 This is a pretty simple plugin and caters mostly for my needs. However, I have made it as flexible and customizable as possible.

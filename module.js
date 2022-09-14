@@ -10,6 +10,17 @@ const assetEmptyPrefix = /^\.\//;
 const backSlashes = /\\/g;
 const nodeModulesRegex = /[\\/]node_modules[\\/].+?[\\/](.*)/;
 const DEFAULT_MODULE_KEY = 'defaultCdnModuleKey____';
+const preloadDirective = {
+  '.js': 'script',
+  '.css': 'style',
+  '.woff': 'font',
+  '.woff2': 'font',
+  '.jpeg': 'image',
+  '.jpg': 'image',
+  '.gif': 'image',
+  '.png': 'image',
+  '.svg': 'image',
+};
 
 class WebpackCdnPlugin {
   constructor({
@@ -18,6 +29,7 @@ class WebpackCdnPlugin {
     prodUrl = 'https://unpkg.com/:name@:version/:path',
     devUrl = ':name/:path',
     publicPath,
+    preload = false,
     optimize = false,
     crossOrigin = false,
     sri = false,
@@ -31,6 +43,8 @@ class WebpackCdnPlugin {
     this.crossOrigin = crossOrigin;
     this.sri = sri;
     this.pathToNodeModules = pathToNodeModules;
+    this.preload = preload !== false;
+    this.preloads = [];
   }
 
   apply(compiler) {
@@ -69,11 +83,13 @@ class WebpackCdnPlugin {
               WebpackCdnPlugin._cleanModules(modules, this.pathToNodeModules);
 
               modules = modules.filter((module) => module.version);
-
-              data.assets.js = WebpackCdnPlugin._getJs(modules, ...getArgs).concat(data.assets.js);
-              data.assets.css = WebpackCdnPlugin._getCss(modules, ...getArgs).concat(
+              const js = WebpackCdnPlugin._getJs(modules, ...getArgs);
+              data.assets.js = js.concat(data.assets.js);
+              const css = WebpackCdnPlugin._getCss(modules, ...getArgs);
+              data.assets.css = css.concat(
                 data.assets.css,
               );
+              this.preloads = [...js, ...css];
 
               if (this.prefix === empty) {
                 WebpackCdnPlugin._assetNormalize(data.assets.js);
@@ -97,65 +113,99 @@ class WebpackCdnPlugin {
     });
 
     compiler.options.externals = externals;
-
-    if (this.prod && (this.crossOrigin || this.sri)) {
-      compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
-        compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
-          compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
-            WebpackCdnPlugin._getHtmlHook(compilation, 'alterAssetTags', 'htmlWebpackPluginAlterAssetTags').tapPromise(
-              'WebpackCdnPlugin',
-              this.alterAssetTags.bind(this),
-            );
-          });
+    compiler.hooks.afterPlugins.tap('WebpackCdnPlugin', () => {
+      compiler.hooks.thisCompilation.tap('WebpackCdnPlugin', () => {
+        compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', (compilation) => {
+          WebpackCdnPlugin._getHtmlHook(compilation, 'alterAssetTags', 'htmlWebpackPluginAlterAssetTags').tapPromise(
+            'WebpackCdnPlugin',
+            this.alterAssetTags.bind(this),
+          );
         });
       });
-    }
+    });
   }
 
   async alterAssetTags(pluginArgs) {
-    const getProdUrlPrefixes = () => {
-      const urls = this.modules[Reflect.ownKeys(this.modules)[0]]
-        .filter((m) => m.prodUrl).map((m) => m.prodUrl);
-      urls.push(this.url);
-      return [...new Set(urls)].map((url) => url.split('/:')[0]);
-    };
-
-    const prefixes = getProdUrlPrefixes();
-
-    const filterTag = (tag) => {
-      const url = (tag.tagName === 'script' && tag.attributes.src)
-        || (tag.tagName === 'link' && tag.attributes.href);
-      return url && prefixes.filter((prefix) => url.indexOf(prefix) === 0).length !== 0;
-    };
-
-    const processTag = async (tag) => {
-      if (this.crossOrigin) {
-        tag.attributes.crossorigin = this.crossOrigin;
+    if (this.preload && pluginArgs.plugin.options.preload !== false) {
+      const links = this.preloads.map((href) => this.createResourceHintTag(href, pluginArgs));
+      /* istanbul ignore else */
+      if (pluginArgs.assetTags) {
+        pluginArgs.assetTags.styles = links.concat(pluginArgs.assetTags.styles);
+      } else {
+        await Promise.all(pluginArgs.head = links.concat(pluginArgs.head));
       }
-      if (this.sri) {
-        let url;
-        if (tag.tagName === 'link') {
-          url = tag.attributes.href;
-        }
-        if (tag.tagName === 'script') {
-          url = tag.attributes.src;
-        }
-        try {
-          tag.attributes.integrity = await createSri(url);
-        } catch (e) {
-          throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
-        }
-      }
-    };
-
-    /* istanbul ignore next */
-    if (pluginArgs.assetTags) {
-      await Promise.all(pluginArgs.assetTags.scripts.filter(filterTag).map(processTag));
-      await Promise.all(pluginArgs.assetTags.styles.filter(filterTag).map(processTag));
-    } else {
-      await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
-      await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
     }
+    if (this.prod && (this.crossOrigin || this.sri)) {
+      const getProdUrlPrefixes = () => {
+        const urls = this.modules[Reflect.ownKeys(this.modules)[0]]
+          .filter((m) => m.prodUrl).map((m) => m.prodUrl);
+        urls.push(this.url);
+        return [...new Set(urls)].map((url) => url.split('/:')[0]);
+      };
+
+      const prefixes = getProdUrlPrefixes();
+
+      const filterTag = (tag) => {
+        const url = (tag.tagName === 'script' && tag.attributes.src)
+          || (tag.tagName === 'link' && tag.attributes.href);
+        return url && prefixes.filter((prefix) => url.indexOf(prefix) === 0).length !== 0;
+      };
+
+      const processTag = async (tag) => {
+        if (this.crossOrigin) {
+          tag.attributes.crossorigin = this.crossOrigin;
+        }
+        if (this.sri) {
+          let url;
+          if (tag.tagName === 'link') {
+            url = tag.attributes.href;
+          }
+          if (tag.tagName === 'script') {
+            url = tag.attributes.src;
+          }
+          try {
+            tag.attributes.integrity = await createSri(url);
+          } catch (e) {
+            throw new Error(`Failed to generate hash for resource ${url}.\n${e}`);
+          }
+        }
+      };
+
+      /* istanbul ignore next */
+      if (pluginArgs.assetTags) {
+        await Promise.all(pluginArgs.assetTags.scripts.filter(filterTag).map(processTag));
+        await Promise.all(pluginArgs.assetTags.styles.filter(filterTag).map(processTag));
+      } else {
+        await Promise.all(pluginArgs.head.filter(filterTag).map(processTag));
+        await Promise.all(pluginArgs.body.filter(filterTag).map(processTag));
+      }
+    }
+  }
+
+  /**
+   * The as attribute's value must be a valid request destination.
+   * If the provided value is omitted, the value is initialized to the empty string.
+   *
+   * @see https://w3c.github.io/preload/#link-element-interface-extensions
+   *
+   */
+  createResourceHintTag(href, pluginArgs) {
+    const attributes = {
+      rel: 'preload',
+      href,
+    };
+    const ext = path.extname(href);
+    if (preloadDirective[ext]) {
+      attributes.as = preloadDirective[ext];
+    }
+    if (this.crossOrigin) {
+      attributes.crossorigin = this.crossOrigin;
+    }
+    return {
+      tagName: 'link',
+      selfClosingTag: !!pluginArgs.plugin.options.xhtml,
+      attributes,
+    };
   }
 
   /**

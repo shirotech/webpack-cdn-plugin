@@ -5,7 +5,8 @@ const WebpackCdnPlugin = require('../module');
 
 const cssMatcher = /<link href="([^"]+?)" rel="stylesheet"( crossorigin="anonymous")?( integrity="sha.[^"]+?")?>/g;
 const jsMatcher = /<script(?: type="text\/javascript")? src="([^"]+?)"( crossorigin="anonymous")?( integrity="sha[^"]+?")?>/g;
-
+const cssPreloadMatcher = /<link rel="preload" href="([^"]+?.css)" as="style"( crossorigin="anonymous")?>/g;
+const jsPreloadMatcher = /<link rel="preload" href="([^"]+?.js)" as="script"( crossorigin="anonymous")?>/g;
 let cssAssets;
 let jsAssets;
 let cssAssets2;
@@ -18,6 +19,10 @@ let cssCrossOrigin;
 let jsCrossOrigin;
 let cssCrossOrigin2;
 let jsCrossOrigin2;
+let cssPreload;
+let jsPreload;
+let cssPreload2;
+let jsPreload2;
 
 const versions = {
   jasmine: WebpackCdnPlugin.getVersionInNodeModules('jasmine'),
@@ -43,6 +48,10 @@ function runWebpack(callback, config) {
   jsCrossOrigin = [];
   cssCrossOrigin2 = [];
   jsCrossOrigin2 = [];
+  cssPreload = [];
+  jsPreload = [];
+  cssPreload2 = [];
+  jsPreload2 = [];
 
   const compiler = webpack(config);
   compiler.outputFileSystem = fs;
@@ -83,7 +92,18 @@ function runWebpack(callback, config) {
         jsSri2.push(sriMatches[1]);
       }
     }
-
+    while ((matches = cssPreloadMatcher.exec(html))) {
+      cssPreload.push(/rel="preload"/.test(matches[0]) && /as="style"/.test(matches[0]));
+    }
+    while ((matches = cssPreloadMatcher.exec(html2))) {
+      cssPreload2.push(/rel="preload"/.test(matches[0]) && /as="style"/.test(matches[2]));
+    }
+    while ((matches = jsPreloadMatcher.exec(html))) {
+      jsPreload.push(/rel="preload"/.test(matches[0]) && /as="script"/.test(matches[0]));
+    }
+    while ((matches = jsPreloadMatcher.exec(html2))) {
+      jsPreload2.push(/rel="preload"/.test(matches[0]) && /as="script"/.test(matches[0]));
+    }
     callback();
   });
 }
@@ -100,6 +120,7 @@ function getConfig({
   optimize,
   crossOrigin,
   sri,
+  preload,
 }) {
   const output = {
     path: path.join(__dirname, 'dist/assets'),
@@ -183,12 +204,12 @@ function getConfig({
     optimize,
     crossOrigin,
     sri,
+    preload,
   };
 
   if (publicPath !== undefined) {
     options.publicPath = publicPath;
   }
-
   return {
     mode: prod ? 'production' : 'development',
     entry: path.join(__dirname, '../example/app.js'),
@@ -626,6 +647,19 @@ describe('Webpack Integration', () => {
 
       it('should output the right assets (js)', () => {
         expect(jsAssets).toEqual(['/jasmine/lib/jasmine.js', '/app.js']);
+      });
+    });
+    describe('When `preload` is set', () => {
+      beforeAll((done) => {
+        runWebpack(done, getConfig({ prod: true, preload: true, crossOrigin: 'anonymous' }));
+      });
+
+      it('should output the right assets preload (css)', () => {
+        expect(cssPreload).toEqual([true, true, true]);
+      });
+
+      it('should output the right assets preload (js)', () => {
+        expect(jsPreload).toEqual([true, true, true, true]);
       });
     });
   });
